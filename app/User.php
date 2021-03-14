@@ -2,6 +2,11 @@
 
 namespace App;
 
+use App\Models\Quiz;
+use App\Models\QuizCopy1;
+use App\Models\QuizCopy2;
+use App\Models\ResultTest;
+use App\Models\Room;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,4 +41,29 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function quizzes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Quiz::class, 'user_id');
+    }
+
+    public function quizCopy2s(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(QuizCopy2::class, 'user_id');
+    }
+
+    public function quizCopy1s(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(QuizCopy1::class, 'user_id');
+    }
+
+    public function rooms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Room::class, 'user_id');
+    }
+
+    public function resultTests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ResultTest::class, 'user_id');
+    }
 }
