@@ -20,3 +20,15 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+Route::group(['prefix' => 'login-form'], function(){
+
+    Route::get('/modal', function () {
+        return view('includes/modalLogin');
+    })->name('login-form.modal');
+
+    Route::get('/student', function () {
+        return view('layouts/Student/login');
+    })->name('login-form.student');
+});
