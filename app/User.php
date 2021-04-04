@@ -67,4 +67,9 @@ class User extends Authenticatable  implements MustVerifyEmail
     {
         return $this->hasMany(ResultTest::class, 'user_id');
     }
+
+    public function roomsOnline(): int
+    {
+        return Room::query()->where('user_id', auth()->id())->where('status', 1)->count();
+    }
 }

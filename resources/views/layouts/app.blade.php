@@ -24,17 +24,27 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-    {{--    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>--}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- Jquery confirm -->
-{{--    <link rel="stylesheet" href="{{ asset('css/jquery-confirm/jquery-confirm.min.css') }}">--}}
-{{--    <script src="{{ asset('js/jquery-confirm/jquery-confirm.min.js') }}"></script>--}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+
+    <!-- Bootstrap toggle-->
+    <link href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/bootstrap4-toggle.min.js') }}"></script>
+
+    <!-- Font awesome -->
+    <script src="https://kit.fontawesome.com/38b994262b.js" crossorigin="anonymous"></script>
+    <link   href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+            rel="stylesheet"  type='text/css'>
+
+    <!-- Pusher -->
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -90,8 +100,20 @@
                 </div>
             </nav>
         @show
-        <main class="py-4">
-            <div class="container">
+        <main class="">
+            @if (session('success'))
+                <div class="alert alert-success alert-quiz" role="alert" id="success-alert">
+                    <strong>Success! </strong>
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if (session('errors'))
+                <div class="alert alert-danger alert-quiz" role="alert" id="error-alert">
+                    <strong>Error! </strong>
+                    {{ session('errors')->first() }}
+                </div>
+            @endif
+            <div class="container py-4">
                 @yield('content')
             </div>
         </main>
@@ -99,15 +121,27 @@
         <div class="loader hide-load"></div>
     </div>
 </body>
+<div class="footer-basic">
+    <footer>
+        <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a><a href="#"><i class="icon ion-social-snapchat"></i></a><a href="#"><i class="icon ion-social-twitter"></i></a><a href="#"><i class="icon ion-social-facebook"></i></a></div>
+        <ul class="list-inline">
+            <li class="list-inline-item"><a href="#">Home</a></li>
+            <li class="list-inline-item"><a href="#">Services</a></li>
+            <li class="list-inline-item"><a href="#">About</a></li>
+            <li class="list-inline-item"><a href="#">Terms</a></li>
+            <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+        </ul>
+        <p class="copyright">QuizApp © 2021</p>
+    </footer>
+</div>
 </html>
 <script>
     $.ajaxSetup({
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
         }
     })
 </script>
-
 <script type="text/javascript">
     $('button[name="login"]').click(e => {
         e.preventDefault();
@@ -117,6 +151,13 @@
             showError();
         });
     })
-
+    $(window).ready(function () {
+        $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
+            $("#success-alert").slideUp(500);
+        });
+        $("#error-alert").fadeTo(2000, 500).slideUp(500, function() {
+            $("#error-alert").slideUp(500);
+        });
+    })
 </script>
 @yield('javascript')

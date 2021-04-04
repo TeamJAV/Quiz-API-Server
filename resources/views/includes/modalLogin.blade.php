@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column justify-content-center">
-                    <a target="_blank" href="{{ route('login-form.student') }}" class="btn btn-outline-primary btn-block">Student Login</a>
+                    <a target="_blank" href="{{ route('student.login.room') }}" class="btn btn-outline-primary btn-block">Student Login</a>
                     <a target="_blank" href="{{ route('login') }}" class="btn btn-outline-warning btn-block">Teacher Login</a>
                     <hr>
                     <h5 class="text-center">Don't have an account ?</h5>

@@ -9,7 +9,7 @@ const ajaxOnLoad = (uri, method, body, callBackSuccess, callBackError) => {
     $('.loader').removeClass('hide-load');
     $.ajax({
         url: uri,
-        body: body,
+        data: body,
         method: method,
         success: (res) => {
             $('.loader').addClass('hide-load');
@@ -51,4 +51,38 @@ const showSuccess = (msg="This action successfully") => {
             }
         }
     });
+}
+
+const showConfirm = (content="Do you want to do this?", actionConfirm=null, actionCancel=null) => {
+    $.confirm({
+        title: "Confirm!",
+        content: content,
+        type: 'red',
+        buttons: {
+            confirm: {
+                text: "OK",
+                btnClass: 'btn-red',
+                action: () => {
+                    actionConfirm()
+                },
+            },
+            cancel: {
+                btnClass: 'btn-gray',
+                action: () => {
+                    actionCancel()
+                },
+            }
+        }
+    });
+}
+
+const formToJSON = form => {
+    let unindexed_array = form.serializeArray();
+    let indexed_array = {};
+
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
 }
