@@ -48,16 +48,6 @@ class User extends Authenticatable  implements MustVerifyEmail
         return $this->hasMany(Quiz::class, 'user_id');
     }
 
-    public function quizCopy2s(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(QuizCopy2::class, 'user_id');
-    }
-
-    public function quizCopy1s(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(QuizCopy1::class, 'user_id');
-    }
-
     public function rooms(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Room::class, 'user_id');

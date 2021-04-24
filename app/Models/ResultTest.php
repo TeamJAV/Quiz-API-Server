@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ResultTest extends Model
 {
     //
+    use SoftDeletes;
+    
     public function room(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Room::class, 'room_id');
@@ -18,17 +21,12 @@ class ResultTest extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function quizCopy1(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function quizCopy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(QuizCopy1::class, 'quiz1_id');
+        return $this->belongsTo(QuizCopy::class, "quiz_copy_id");
     }
 
-    public function quizCopy2(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(QuizCopy2::class, 'quiz2_id');
-    }
-
-    public function resultDetail(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function resultDetails(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ResultDetail::class, 'result_id');
     }

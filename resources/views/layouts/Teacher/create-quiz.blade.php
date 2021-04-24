@@ -30,7 +30,6 @@
                         <label for="" class="font-weight-bold" style="font-size:22px">A</label>
                         <input type="checkbox" class=" mx-2">
                         <div style="width:100%">
-                            <!-- <input type="text" class="form-control choice" placeholder="Answer..."> -->
                             <p class="text-secondary p-form" style="width:100%; display:block; padding:.375rem .75rem;font-size:1rem, line-height:1.5, color:#495057; background-color:#fff;background-clip:padding-box; border:1px solid #ced4da; border-radius: .25rem; height:calc(1.6em + 0.75rem + 2px);">Answer...</p>
                         </div>
                     </div>
@@ -38,14 +37,14 @@
                         <label for="" class="font-weight-bold" style="font-size:22px">B</label>
                         <input type="checkbox" class=" mx-2">
                         <div style="width:100%">
-                            <input type="text" class="form-control choice" placeholder="Answer...">
+                        <p class="text-secondary p-form" style="width:100%; display:block; padding:.375rem .75rem;font-size:1rem, line-height:1.5, color:#495057; background-color:#fff;background-clip:padding-box; border:1px solid #ced4da; border-radius: .25rem; height:calc(1.6em + 0.75rem + 2px);">Answer...</p>
                         </div>
                     </div>
                     <div class="d-flex flex-row align-items-center justify-content-start my-2">
                         <label for="" class="font-weight-bold" style="font-size:22px">C</label>
                         <input type="checkbox" class=" mx-2">
                         <div style="width:100%">
-                            <input type="text" class="form-control choice" placeholder="Answer...">
+                        <p class="text-secondary p-form" style="width:100%; display:block; padding:.375rem .75rem;font-size:1rem, line-height:1.5, color:#495057; background-color:#fff;background-clip:padding-box; border:1px solid #ced4da; border-radius: .25rem; height:calc(1.6em + 0.75rem + 2px);">Answer...</p>
                         </div>
                     </div>
                 </div>

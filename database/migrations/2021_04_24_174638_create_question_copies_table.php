@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQuestionsCopy1sTable extends Migration
+class CreateQuestionCopiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateQuestionsCopy1sTable extends Migration
      */
     public function up()
     {
-        Schema::create('questions_copy1s', function (Blueprint $table) {
+        Schema::create('question_copies', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 255);
+            $table->string('title');
             $table->longText('explain')->nullable();
             $table->longText('choices');
             $table->longText('correct_choices');
-            $table->unsignedBigInteger('quiz1_id');
-            $table->foreign('quiz1_id')->references('id')->on('quiz_copy1s');
+            $table->unsignedBigInteger('quiz_copy_id');
+            $table->foreign('quiz_copy_id')->references('id')->on('quiz_copies');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -32,6 +33,6 @@ class CreateQuestionsCopy1sTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questions_copy1s');
+        Schema::dropIfExists('question_copies');
     }
 }
