@@ -1,3 +1,6 @@
+const api_key = "e0ea7b95ea2dc511a60f";
+
+
 const loadModal = data => {
     let popUp = $('.popUpModal');
     $(popUp).empty();
@@ -77,10 +80,10 @@ const showConfirm = (content="Do you want to do this?", actionConfirm=null, acti
 }
 
 const formToJSON = form => {
-    let unindexed_array = form.serializeArray();
+    let unhindered_array = form.serializeArray();
     let indexed_array = {};
 
-    $.map(unindexed_array, function(n, i){
+    $.map(unhindered_array, function(n, i){
         indexed_array[n['name']] = n['value'];
     });
 

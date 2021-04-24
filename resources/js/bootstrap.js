@@ -28,12 +28,20 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
+// window.$ = window.jQuery = require('jquery');
+// let token = document.head.querySelector('meta[name="csrf-token"]');
+// $.ajaxSetup({
+//     headers: {
+//         'X-CSRF-TOKEN': token.content
+//     }
+// })
 
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
+    namespace: 'App.Events',
     broadcaster: 'pusher',
     key: "1171752",
     cluster: "ap1",

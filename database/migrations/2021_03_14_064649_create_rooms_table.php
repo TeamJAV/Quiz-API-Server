@@ -25,6 +25,7 @@ class CreateRoomsTable extends Migration
             $table->foreign('quiz1_id')->references('id')->on('quiz_copy1s');
             $table->foreign('quiz2_id')->references('id')->on('quiz_copy2s');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

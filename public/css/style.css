@@ -29,7 +29,14 @@
     width: 6.5rem;
 }
 
+.nav-tab-teacher{
+    font-size:12px;
+    letter-spacing:0.5px;
+}
 
+.text-socrative{
+    color: #dee2e6;
+}
 /* Footer style*/
 
 .footer-basic {
@@ -126,3 +133,4 @@
         visibility: hidden;
     }
 }
+

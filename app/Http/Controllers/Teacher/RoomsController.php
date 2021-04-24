@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Throwable;
 
 class RoomsController extends Controller
 {
@@ -20,16 +21,22 @@ class RoomsController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return Application|Factory|Response|View
+     * @return Application|Factory|JsonResponse|View
+     * @throws Throwable
      */
     public function index(Request $request)
     {
         //
-        $rooms = Room::query()->where('user_id', auth()->id())->orderByDesc('status');
+        $rooms = Room::query()->where('user_id', auth()->id())->orderBy('id');
         if ($request->filled('s')){
             $rooms->where('name', 'like', "%". $request->get('s') ."%");
         }
-        return view('layouts.Teacher.rooms', ['rooms' =>  $rooms->simplePaginate(5), 's' => $request->filled('s') ? $request->get('s') : '']);
+        $rooms = $rooms->paginate(20);
+//        if ($request->ajax()){
+//            $view = view('includes.data', ['rooms' => $rooms])->render();
+//            return response()->json(['html' => $view]);
+//        }
+        return view('layouts.Teacher.rooms', ['rooms' => $rooms, 's' => $request->filled('s') ? $request->get('s') : '']);
     }
 
     /**
@@ -76,12 +83,13 @@ class RoomsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return Response
+     * @param int $id
+     * @return Application|Factory|Response|View
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         //
+        return view('includes.Teacher.edit-room', ['room' => Room::find($id)]);
     }
 
     /**
@@ -91,20 +99,23 @@ class RoomsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(NewRoomRequest $request, $id): JsonResponse
     {
         //
-        $room = Room::findOrFail($id);
-        try {
-            $room->status = $room->status == 0 ? 1 : 0;
-            $room->save();
-            $type = $room->status == 1 ? "online" : "offline";
-            $request->session()->flash('success', "Room {$room->name} has {$type}");
-            event(new RoomOnlineEvent($room->id, $room->status == 1));
-            return Controller::responseJSON();
-        }catch (\Exception $e) {
-            return Controller::responseJSON(500, false, $e->getMessage());
-        }
+//        $room = Room::findOrFail($id);
+//        try {
+//            $room->status = $room->status == 0 ? 1 : 0;
+//            $room->save();
+//            $type = $room->status == 1 ? "online" : "offline";
+//            $request->session()->flash('success', "Room {$room->name} has {$type}");
+//            event(new RoomOnlineEvent($room->id, $room->status == 1));
+//            return Controller::responseJSON();
+//        }catch (\Exception $e) {
+//            return Controller::responseJSON(500, false, $e->getMessage());
+//        }
+        Room::where('id', $id)->update(['name' => $request->get('name')]);
+        $request->session()->flash('success', "Room {$request->get('name')} have been rename success");
+        return Controller::responseJSON();
     }
 
     /**
@@ -128,4 +139,5 @@ class RoomsController extends Controller
             $request->session()->flash('error', $e->getMessage());
         }
     }
+
 }

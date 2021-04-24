@@ -35,18 +35,17 @@ class NewRoomRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator){
+    public function withValidator($validator) {
         $validator->after(function ($validator) {
-            if (Room::query()->where('user_id', auth()->id())->count() > 10){
+            if (Room::query()->where('user_id', auth()->id())->count() > 20){
                 $validator->errors()->add('name', 'You have reached the maximum of rooms');
             }
         });
     }
 
-    public function failedValidation (Validator $validator): \Illuminate\Http\JsonResponse
-    {
+    public function failedValidation (Validator $validator): \Illuminate\Http\JsonResponse {
         throw new HttpResponseException(
-             response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
+            response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
         );
     }
 }

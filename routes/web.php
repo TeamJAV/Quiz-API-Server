@@ -33,6 +33,9 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['auth', 'verified']], func
 
     // Resource route rooms
     Route::resource('/rooms', 'Teacher\RoomsController');
+
+    Route::get('/quizzes', 'Teacher\QuizzesController@index')->name('quizzes.index');
+    Route::get('/edit-quiz', 'Teacher\QuizzesController@create')->name('quizzes.create');
 });
 
 

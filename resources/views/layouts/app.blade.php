@@ -45,13 +45,17 @@
 
     <!-- Pusher -->
     <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.3.7/jquery.jscroll.min.js"></script>--}}
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 <body>
     <div id="app">
         @section('navbar')
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
                 <div class="container">
-                    <a class="navbar-brand" href="{{ url('/') }}">
+                    <a class="navbar-brand" href="{{ url('/teacher') }}">
                         {{ config('app.name', 'Laravel') }}
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -141,8 +145,14 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
         }
     })
+
+    const pusher = new Pusher(api_key, {
+        cluster: 'ap1',
+        encrypted: true
+    });
 </script>
 <script type="text/javascript">
+
     $('button[name="login"]').click(e => {
         e.preventDefault();
         ajaxOnLoad("{{ route('login-form.modal') }}", "GET", null, function (res) {

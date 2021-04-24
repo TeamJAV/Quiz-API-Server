@@ -32,7 +32,6 @@
 </nav>
 @if(\Illuminate\Support\Facades\Session::has('room') && \Illuminate\Support\Facades\Session::has('student'))
 <script type="text/javascript">
-    const api_key = "e0ea7b95ea2dc511a60f";
 
     const bindURL = data => {
         let room_id = "{{ \Illuminate\Support\Facades\Session::get('room')['id'] }}";
@@ -45,12 +44,10 @@
     }
 
     $(document).ready(function() {
-        let pusher = new Pusher(api_key, {
-            cluster: 'ap1',
-            encrypted: true
-        });
         let channel = pusher.subscribe('room-online');
         channel.bind("App\\Events\\RoomOnlineEvent", bindURL);
+        // Echo.private('room-online').listen("RoomOnlineEvent", e => bindURL())
+
     });
 </script>
 @endif
