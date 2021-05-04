@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+// use App\Container\SettingLaunch;
+use App\Repositories\Room\IRoomRepositoryInterface;
+use App\Repositories\Room\RoomRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +17,14 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        // $this->app->bind(SettingLaunch::class, function ($app){
+        //     return new SettingLaunch("longle");
+        // });
+
+        $this->app->singleton(
+            IRoomRepositoryInterface::class,
+            RoomRepository::class
+        );
     }
 
     /**

@@ -15,13 +15,13 @@ class CreateResultTestsTable extends Migration
     {
         Schema::create('result_tests', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('status', 0);
+            $table->tinyInteger('status')->default(0);
             $table->dateTime('date_create');
             $table->unsignedBigInteger('room_id');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('quiz_copy_id');
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('quiz_copy_id')->references('id')->on('quiz_copies');
             $table->softDeletes();
             $table->timestamps();
         });

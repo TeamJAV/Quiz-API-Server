@@ -40,8 +40,8 @@
         event.preventDefault();
         let data = formToJSON($('form[name="newRoom"]'));
         ajaxOnLoad("{{ route('rooms.update',$room['id']) }}", 'PUT', data, function (res) {
-            $('.loader').addClass('hide-load');
             if (res.error){
+                $('.loader').addClass('hide-load');
                 $('input[name="name"]').addClass('is-invalid');
                 let template = `
                     <strong class="text-danger" style="font-size:12px">${res.error}</strong>
@@ -49,7 +49,7 @@
                 $('.error').html(template);
                 return null;
             }
-            $('.modal').modal('hide');
+            // $('.modal').modal('hide');
             location.reload();
         }, function (res) {
 

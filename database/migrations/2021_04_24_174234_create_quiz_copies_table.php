@@ -16,9 +16,7 @@ class CreateQuizCopiesTable extends Migration
         Schema::create('quiz_copies', function (Blueprint $table) {
             $table->id();
             $table->string('title', 255);
-            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('quiz_id');
-            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('quiz_id')->references('id')->on('quizzes');
             $table->softDeletes();
             $table->timestamps();

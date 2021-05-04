@@ -14,15 +14,15 @@
         @if(count($rooms) == 0)
             <p class="text-secondary text-lg-center">Don't have any room</p>
         @else
-            <table class="table mt-4">
+            <table class="table mt-4 table-borderless">
                 <thead>
                 <tr>
-                    <th style="width: 5%" class="text-secondary text-sm-left" scope="col"><small class="text-uppercase">#</small></th>
-                    <th style="width: 15%" class="text-secondary text-center" scope="col"><small class="text-uppercase">status</small></th>
-                    <th style="width: 40%" class="text-secondary" colspan="3" scope="col"><small class="text-uppercase">room name</small></th>
-                    <th style="width: 10%" class="text-secondary text-center" scope="col"><small class="text-uppercase">Join</small></th>
-                    <th style="width: 10%" class="text-secondary text-center" scope="col"><small class="text-uppercase">Time remaining</small></th>
-                    <th style="width: 5%" class="text-secondary text-center" scope="col"><small class="text-uppercase">delete</small></th>
+                    <th style="width: 5%" class="text-disable text-sm-left" scope="col"><span class="text-uppercase">#</span></th>
+                    <th style="width: 15%" class="text-disable text-center" scope="col"><span class="text-uppercase">status</span></th>
+                    <th style="width: 40%" class="text-disable" colspan="3" scope="col"><span class="text-uppercase">room name</span></th>
+                    <th style="width: 10%" class="text-disable text-center" scope="col"><span class="text-uppercase">Join</span></th>
+                    <th style="width: 15%" class="text-disable text-center" scope="col"><span class="text-uppercase">Time remaining</span></th>
+                    <th style="width: 5%" class="text-disable text-center" scope="col"><span class="text-uppercase">delete</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -33,14 +33,13 @@
                                     <small>{{ $index + 1 }}</small>
                                 </th>
                                 <th class="text-center">
-                                    {{--                                    <i class="fa fa-wifi blink" aria-hidden="true"></i>--}}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle @if($room['status'] == 1) text-success  @else text-danger @endif" viewBox="0 0 16 16">
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                         <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                                     </svg>
                                 </th>
                                 <th colspan="3">
-                                    <span style="font-size:16px;" class="text-dark text-uppercase">{{ $room['name'] }}</span>
+                                    <h5 class="text-dark text-uppercase d-inline">{{ $room['name'] }}</h5>
                                     <i class="fa fa-pencil px-4 text-secondary" onclick="updateRoom(event, {{ $room['id'] }})" aria-hidden="true"></i>
                                 </th>
                                 <th style="padding: 0;" class="text-center">

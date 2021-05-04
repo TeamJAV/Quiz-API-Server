@@ -24,26 +24,28 @@ class NewRoomRequest extends FormRequest
      *
      * @return array
      */
-    public function rules() : array
+    public function rules(): array
     {
         return [
             //
             'id' => 'nullable|numeric',
-            'name' => 'required|min:1|max:25|unique:rooms,name,'.$this->id,
+            'name' => 'required|min:1|max:25|unique:rooms,name,NULL,id,deleted_at,NULL',
             'status' => 'nullable',
             'is_shuffle' => 'nullable'
         ];
     }
 
-    public function withValidator($validator) {
+    public function withValidator($validator)
+    {
         $validator->after(function ($validator) {
-            if (Room::query()->where('user_id', auth()->id())->count() > 20){
+            if (Room::query()->where('user_id', auth()->id())->count() > 20) {
                 $validator->errors()->add('name', 'You have reached the maximum of rooms');
             }
         });
     }
 
-    public function failedValidation (Validator $validator): \Illuminate\Http\JsonResponse {
+    public function failedValidation(Validator $validator): \Illuminate\Http\JsonResponse
+    {
         throw new HttpResponseException(
             response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
         );

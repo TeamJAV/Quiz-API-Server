@@ -33,7 +33,7 @@
                 </li>
             </ul>
     </div>
-    <div class="container mt-3">
+    <div class="container-fluid mt-3">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
         </button>

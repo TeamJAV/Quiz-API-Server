@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get("/all-user", function (){
+//    return new \App\Http\Resources\UserCollection(\App\User::with("rooms")->where("id", 1)->first());
+    return \App\Http\Resources\UserCollection::collection(\App\User::with("rooms")->get());
+});

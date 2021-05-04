@@ -117,12 +117,12 @@
                     {{ session('errors')->first() }}
                 </div>
             @endif
-            <div class="container py-4">
+            <div class="container-fluid py-4">
                 @yield('content')
             </div>
         </main>
         <div class="popUpModal"></div>
-        <div class="loader hide-load"></div>
+        <div class="loader"></div>
     </div>
 </body>
 <div class="footer-basic">
@@ -161,7 +161,13 @@
             showError();
         });
     })
+
+    $(window).on("load", function () {
+        $('.loader').addClass('hide-load');
+    })
+
     $(window).ready(function () {
+
         $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
             $("#success-alert").slideUp(500);
         });
