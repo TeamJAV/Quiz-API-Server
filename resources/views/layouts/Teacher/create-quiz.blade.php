@@ -18,7 +18,7 @@
     </div>
     <!-- <div id="editor"></div> -->
     <div class="content my-2">
-        <div class="card" style='border-radius:5px'>
+        <div class="card" style='border-radius:5px; border:none'>
             <div class="card-body d-flex flex-row" style="background-color: rgba(245, 247, 248 ,1); border-radius:5px">
                 <div class="col col-md-9 col-sm-10">
                     <div class="d-flex flex-row align-items-end justify-content-start">
@@ -141,4 +141,234 @@
         }
     })
 </script>
+
+<div>
+            <form method="post" id="quiz">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-xl d-inline-flex p-2">
+                        <div class="p-2 position-relative quiz-title-area">
+                            <label for="quiz-title"><i class="fas fa-pen" style="font-size: 20px; color: #ababab"></i></label>
+                            <input type="text" name="quiz-title" id="quiz-title" class="quiz_title"
+                                   placeholder="Title" required>
+
+                        </div>
+                    </div>
+                    <div class="col-xl p-2">
+                        <div class="p-2 float-right">
+                            <button type="submit" id="saveandexit" class="btn btn-primary"
+                                    style="border-radius: 20px; font-size:26px">
+                                Save and exit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+
+                {#form question#}
+                <div>
+                    {# question title #}
+                    <div class="form_question" id="form_question"></div>
+                    <br>
+
+                    <div class="text-center"><h2>Add a question</h2></div>
+
+
+                    <div class="d-flex justify-content-center">
+                            <div class="form_question" id="form_question"></div>
+                                    <br>
+                            <div class="text-center">
+                                <button type="button" id="add_question" class="btn-add-question" style="font-size:15px; margin-right: 15px">Multiple Choice
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" id="add_question" class="btn-add-question" style="font-size:15px; margin-right: 15px">True False
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" id="add_question" class="btn-add-question" style="font-size:15px">Short Answer
+                                </button>
+                            </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <script>
+            const qtnList = document.getElementById("form_question");
+            const addQtnBtn = document.getElementById("add_question");
+            const delQtnBtn = document.querySelector(".remove_question");
+
+            addQtnBtn.addEventListener("click", () => {
+
+                let qtnId = 0;
+
+                if (qtnList.lastChild !== null) {
+                    qtnId = parseInt(qtnList.lastChild.id) + 1;
+                }
+
+                const qtnForm = document.createElement("div");
+                qtnForm.setAttribute("class", "qtn-form");
+                qtnForm.setAttribute("id", `${qtnId}`)
+                const qtnFormContent = `
+                        <div class="row">
+                            <div class="col-xl-1 qs_label">
+                                <label for="question_title" class="incr">${qtnId + 1}</label>
+                            </div>
+                            <div class="col-xl-7 qs">
+                                <input type="text" id="question_title" name="question_title"
+                                       placeholder="Have a multiple-choice question to ask?"
+                                       class="question_title form-control inline">
+                                <br>
+                                <div class="question_wrapper" id="all_answer"></div>
+                                <button class="add_selector" type="button">&#43;Add Answer</button>
+                                <div class="explain">
+                                    <input type="text" class="question_explain" id="exp"
+                                           placeholder="An explaination, if you like">
+                                    <label for="exp" class="label_explain">i</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 qs">
+                            <div class="upload-images">
+                                <div class="wrapper">
+                                    <div class="image">
+                                    <img src="" alt="">
+                                    </div>
+                                    <div class="content">
+                                    <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                    <div class="text">No file chosen!</div>
+                                    </div>
+                                    <div id="cancel-btn"><i class="fas fa-times"></i></div>
+                                </div>
+                                <button onclick="defaultBtnActive()" id="custom-btn">Upload image</button>
+                                <input id="default-btn" type="file" hidden>
+                            </div>
+
+                                    <a href="javascript:void(0);" for="question_title" class="remove_question"></a>
+                            </div>
+                            <div class="end-question"></div>
+                        </div>
+        `;
+
+                qtnForm.innerHTML = qtnFormContent;
+                qtnList.appendChild(qtnForm);
+
+            })
+            qtnList.addEventListener("click", (event) => {
+                const target = event.target;
+                const targetClass = target.className;
+                if (targetClass === null) return;
+
+                if (targetClass === "remove_question") {
+                    console.log(target)
+                    deleteQuestion(target);
+                }
+                if (targetClass === "add_selector") {
+                    addAnswer(target);
+                }
+                if (targetClass === "remove_button") {
+                    deleteAnswer(target);
+                }
+            })
+
+            const deleteQuestion = (target) => {
+                const currentQtn = target.parentNode.parentNode.parentNode;
+                console.log(currentQtn)
+                let lastQtn = qtnList.lastChild;
+
+                while (lastQtn !== currentQtn) {
+                    const prevQtn = lastQtn.previousSibling;
+                    lastQtn.setAttribute("id", `${prevQtn.id}`);
+                    lastQtn.querySelector(".incr").textContent = `${parseInt(prevQtn.id) + 1}`;
+                    lastQtn = prevQtn;
+                }
+                qtnList.removeChild(currentQtn);
+            }
+
+            const addAnswer = (target) => {
+                const currentQtn = target.parentNode.parentNode;
+                const ansList = currentQtn.querySelector(".question_wrapper");
+                if (ansList.childElementCount < 26) {
+                    let ansId = "A";
+                    if (ansList.lastChild !== null) {
+                        ansId = nextChar(ansList.lastChild.id); //Khi vượt quá "z", hàm này sẽ trả về "{", "}"...
+                    }
+                    const ansForm = document.createElement("div");
+                    ansForm.setAttribute("class", "test");
+                    ansForm.setAttribute("id", `${ansId}`)
+                    const ansFormContent = `
+            <label for="slt" class="incr2">${ansId}</label>
+            
+            <label class="round qs_correct">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+            <input type="text" id="slt" name="question" placeholder="Answer..." class="question_selector inline sel_data" style="width=60%">
+            <a class="remove_button"></a>
+
+        `;
+
+                    ansForm.innerHTML = ansFormContent;
+                    ansList.appendChild(ansForm);
+                }
+
+            }
+
+            const deleteAnswer = (target) => {
+                const currentAns = target.parentNode;
+                console.log(currentAns)
+                const ansList = currentAns.parentNode;
+                let lastAns = ansList.lastChild;
+                while (lastAns !== currentAns) {
+                    const prevAns = lastAns.previousSibling;
+                    lastAns.setAttribute("id", `${prevAns.id}`);
+                    lastAns.querySelector(".incr2").textContent = `${prevAns.id}`;
+                    lastAns = prevAns;
+                }
+                ansList.removeChild(currentAns);
+            }
+
+
+            /** ------------------------------------------------------- */
+            const nextChar = (c) => {
+                return String.fromCharCode(c.charCodeAt(0) + 1).toUpperCase();
+            }
+
+
+            const wrapper = document.querySelector(".wrapper");
+            const fileName = document.querySelector(".file-name");
+            const defaultBtn = document.querySelector("#default-btn");
+            const customBtn = document.querySelector("#custom-btn");
+            const cancelBtn = document.querySelector("#cancel-btn i");
+            const img = document.querySelector("img");
+            let regExp = /[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/;
+            function defaultBtnActive(){
+                defaultBtn.click();
+            }
+            defaultBtn.addEventListener("change", function(){
+                const file = this.files[0];
+                if(file){
+                const reader = new FileReader();
+                reader.onload = function(){
+                    const result = reader.result;
+                    img.src = result;
+                    wrapper.classList.add("active");
+                }
+                cancelBtn.addEventListener("click", function(){
+                    img.src = "";
+                    wrapper.classList.remove("active");
+                })
+                reader.readAsDataURL(file);
+                }
+                if(this.value){
+                let valueStore = this.value.match(regExp);
+                fileName.textContent = valueStore;
+                }
+            });
+	
+        </script>
+        
 @endsection
