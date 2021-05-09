@@ -3,17 +3,17 @@
 namespace App;
 
 use App\Models\Quiz;
-use App\Models\QuizCopy1;
-use App\Models\QuizCopy2;
 use App\Models\ResultTest;
 use App\Models\Room;
+use App\Notifications\VerifyEmailNotifications;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable  implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable;
+    use Notifiable, HasApiTokens;
 
     /**
      *
@@ -62,4 +62,17 @@ class User extends Authenticatable  implements MustVerifyEmail
     {
         return Room::query()->where('user_id', auth()->id())->where('status', 1)->count();
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::saving(function ($model) {
+            $model->name = strtoupper($model->name);
+        });
+    }
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailNotifications($this->name));
+    }
+
 }

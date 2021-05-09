@@ -143,7 +143,6 @@
 
 <div>
             <form method="post" id="quiz">
-                {% csrf_token %}
                 <div class="row">
                     <div class="col-xl d-inline-flex p-2">
                         <div class="p-2 position-relative quiz-title-area">
@@ -163,10 +162,7 @@
                     </div>
                 </div>
                 <br><br>
-
-                {#form question#}
                 <div>
-                    {# question title #}
                     <div class="form_question" id="form_question"></div>
                     <br>
 
