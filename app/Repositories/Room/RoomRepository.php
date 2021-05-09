@@ -20,7 +20,7 @@ class RoomRepository extends BaseRepository implements IRoomRepositoryInterface
 
     public function getRoomByUserPaginate($userId)
     {
-        return $this->model->with("users")->where("user_id", $userId)->orderBy("id")->paginate($this->perPage);
+        return $this->model->with("user")->where("user_id", $userId)->orderBy("id")->paginate($this->perPage);
     }
 
     public function getRoomByNamePaginate($userId, $name = null)

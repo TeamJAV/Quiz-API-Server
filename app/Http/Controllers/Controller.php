@@ -11,13 +11,13 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected static function responseJSON($status = 200, $success = true, $error = null, $data = []): \Illuminate\Http\JsonResponse
+    protected static function responseJSON($status = 200, $success = true, $message = '', $data = []): \Illuminate\Http\JsonResponse
     {
         return response()->json([
             'status' => $status,
             'success' => $success,
-            'errors' => $error,
-            'data' => []
-        ]);
+            'message' => $message,
+            'data' => $data
+        ], $status);
     }
 }
