@@ -20,6 +20,7 @@ class CreateResultDetailsTable extends Migration
             $table->longText('student_choices')->nullable();
             $table->unsignedBigInteger('result_id');
             $table->foreign('result_id')->references('id')->on('result_tests');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

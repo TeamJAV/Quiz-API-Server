@@ -2,6 +2,9 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Cors;
+use App\Http\Middleware\ForeJsonResponse;
+use App\Http\Middleware\JoinRoomMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -20,6 +23,8 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\ForeJsonResponse::class,
+        \App\Http\Middleware\Cors::class
     ];
 
     /**
@@ -62,5 +67,9 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'join-room' => \App\Http\Middleware\JoinRoomMiddleware::class,
+        'room-auth' => \App\Http\Middleware\RoomAuthMiddlware::class,
+        'json.response' => \App\Http\Middleware\ForeJsonResponse::class,
+        'cors' => \App\Http\Middleware\Cors::class
     ];
 }

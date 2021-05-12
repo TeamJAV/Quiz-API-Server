@@ -21,6 +21,7 @@ class CreateQuestionsTable extends Migration
             $table->longText('correct_choices');
             $table->unsignedBigInteger('quiz_id');
             $table->foreign('quiz_id')->references('id')->on('quizzes');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
