@@ -23,4 +23,13 @@ class Room extends Model
     {
         return $this->hasMany(ResultTest::class, 'room_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::saving(function ($model) {
+            $model->name = strtoupper($model->name);
+        });
+    }
+
 }

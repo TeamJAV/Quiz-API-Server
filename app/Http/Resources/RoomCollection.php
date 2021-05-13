@@ -20,7 +20,7 @@ class RoomCollection extends JsonResource
         return  [
             'id' => $this->id,
             "name" => $this->name,
-            "user" => $this->user
+//            "user" => $this->user
         ];
     }
 }

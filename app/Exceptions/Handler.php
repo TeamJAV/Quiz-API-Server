@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\User;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -60,7 +61,7 @@ class Handler extends ExceptionHandler
         if ($exception instanceof NotFoundHttpException) {
             return response()->json(['message' => 'Not found'], 404);
         }
-        if ($exception instanceof ServerException){
+        if ($exception instanceof ServerException) {
             return response()->json(['message' => 'Server error'], 500);
         }
         return parent::render($request, $exception);
@@ -68,6 +69,12 @@ class Handler extends ExceptionHandler
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
+//        if ($request->user() == null && $request->filled('email')) {
+//            $email = $request->get('email');
+//            $user = User::query()->where('email', $email)->first();
+//            $user->sendEmailVerificationNotification();
+//            return response()->json(['status' => 403, 'success' => false, 'message' => 'Please confirm your email to active this account'], 403);
+//        }
         return response()->json(['status' => 403, 'success' => false, 'message' => 'Forbidden'], 403);
     }
 }

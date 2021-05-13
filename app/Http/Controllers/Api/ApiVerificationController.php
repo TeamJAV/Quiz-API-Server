@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ApiVerificationController extends ApiBaseController
 {
     //
-    private UserRepository $user_repository;
+    private $user_repository;
 
     public function __construct(UserRepository $user_repository)
     {
