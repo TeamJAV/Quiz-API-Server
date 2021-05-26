@@ -32,6 +32,9 @@ class ApiVerificationController extends ApiBaseController
     public function resend(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = Auth::guard('api')->user();
+        if (!$user) {
+            return self::responseJSON(403, false, "Where is your token :))");
+        }
         if ($user->hasVerifiedEmail()) {
             return self::responseJSON(400, false, "Email already verified.");
         }
