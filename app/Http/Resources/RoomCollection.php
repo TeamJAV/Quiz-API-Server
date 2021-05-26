@@ -12,15 +12,19 @@ class RoomCollection extends JsonResource
     /**
      * Transform the resource collection into an array.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
-        return  [
-            'id' => $this->id,
+        return [
+            "id" => $this->id,
             "name" => $this->name,
 //            "user" => $this->user
+            "status" => $this->status != 0 ? 'Online' : 'Offline',
+            "shuffle_answer" => $this->shuffle_answer != 0,
+            "shuffle_question" => $this->shuffle_question != 0,
+            "time_offline" => $this->time_offline
         ];
     }
 }

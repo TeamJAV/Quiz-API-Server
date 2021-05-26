@@ -10,8 +10,7 @@ class Room extends Model
 {
     //
     use SoftDeletes;
-    protected $fillable = ["name", "shuffle_answer", "shuffle_question", "required_name", "status"];
-//    protected $guarded = [];
+    protected $fillable = ["name", "shuffle_answer", "shuffle_question", "required_name", "status", "user_id"];
     protected $dates = ['deleted_at'];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo

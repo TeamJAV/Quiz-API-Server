@@ -20,6 +20,7 @@ class CreateRoomsTable extends Migration
             $table->tinyInteger('required_name')->default(0);
             $table->tinyInteger('shuffle_answer')->default(0);
             $table->tinyInteger('shuffle_question')->default(0);
+            $table->integer('time_offline')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->softDeletes();

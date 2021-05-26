@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Room;
+use App\Policies\RoomPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -15,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
          'App\Model' => 'App\Policies\ModelPolicy',
+        Room::class => RoomPolicy::class
     ];
 
     /**

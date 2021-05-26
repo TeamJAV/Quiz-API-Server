@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Teacher;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Resources\UserCollection;
 use App\Repositories\User\UserRepository;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class ApiAuthController extends ApiBaseController
@@ -31,14 +29,14 @@ class ApiAuthController extends ApiBaseController
         try {
             $input['password'] = bcrypt($input['password']);
             $user = $this->user_repository->create($input);
+            Auth::attempt($request->only(['email', 'password']));
             $user->sendEmailVerificationNotification();
             $token = $user->createToken('Personal Token');
-            return self::responseJSON(200, true, 'Signup success', [
-                'user' => new UserCollection($user),
+            return self::responseJSON(200, true, 'Signup success, we just send email verification for you', [
+                'send_again' => route('verification.resend.api'),
                 'access_token' => $token->accessToken,
-                'token_type' => 'Bearer',
                 'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
-            ])->cookie('_token', $token->accessToken, Carbon::now()->diffInMinutes(Carbon::parse($token->token->expires_at)),
+            ]) ->cookie('_token', $token->accessToken, Carbon::now()->diffInMinutes(Carbon::parse($token->token->expires_at)),
                 '/', $request->getHttpHost(), true, true);
         } catch (\Exception $exception) {
             return self::responseJSON(500, false, $exception->getMessage());

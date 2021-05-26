@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\User;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -58,11 +59,17 @@ class Handler extends ExceptionHandler
         if ($exception instanceof MethodNotAllowedHttpException) {
             return response()->json(['message' => 'Method not allowed'], 405);
         }
-        if ($exception instanceof NotFoundHttpException) {
+        if ($exception instanceof NotFoundHttpException || $exception instanceof ModelNotFoundException) {
             return response()->json(['message' => 'Not found'], 404);
         }
         if ($exception instanceof ServerException) {
-            return response()->json(['message' => 'Server error'], 500);
+            return response()->json(['message' => 'Server maintenance'], 500);
+        }
+        if ($exception instanceof AuthenticationException) {
+            return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 403);
+        }
+        if ($exception instanceof \Exception) {
+            return response()->json(['message' => 'Oops! Something went wrong'], 500);
         }
         return parent::render($request, $exception);
     }
