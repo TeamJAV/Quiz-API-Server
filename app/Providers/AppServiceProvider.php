@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 // use App\Container\SettingLaunch;
+use App\Models\ResultTest;
+use App\Repositories\ResultTest\IResultTestRepositoryInterface;
 use App\Repositories\Room\IRoomRepositoryInterface;
 use App\Repositories\Room\RoomRepository;
 use Illuminate\Support\ServiceProvider;
@@ -23,7 +25,11 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(
             IRoomRepositoryInterface::class,
-            RoomRepository::class
+            RoomRepository::class,
+        );
+        $this->app->singleton(
+            IResultTestRepositoryInterface::class,
+            ResultTest::class
         );
     }
 

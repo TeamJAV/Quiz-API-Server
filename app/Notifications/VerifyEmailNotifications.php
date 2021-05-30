@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\URL;
 class VerifyEmailNotifications extends Notification
 {
     use Queueable;
+
     public $username;
+    public $expires_at = 15;
 
     /**
      * Create a new notification instance.
@@ -29,7 +31,7 @@ class VerifyEmailNotifications extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -40,24 +42,25 @@ class VerifyEmailNotifications extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         $verificationUrl = $this->verificationUrl($notifiable);
         return (new MailMessage)
-                    ->subject(\config('app.name')." Verify Email")
-                    ->greeting('Hello '.$this->username)
-                    ->line('Please click the button below to verify your email address.')
-                    ->action('Verify Email Address', url($verificationUrl))
-                    ->line('Thank you for using our application!');
+            ->subject(\config('app.name') . " Verify Email")
+            ->greeting('Hello ' . $this->username)
+            ->line('This verify email will expire in ' . $this->expires_at . ' minutes')
+            ->line('Please click the button below to verify your email address.')
+            ->action('Verify Email Address', url($verificationUrl))
+            ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -71,7 +74,7 @@ class VerifyEmailNotifications extends Notification
     {
         return URL::temporarySignedRoute(
             'verification.verify.api',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            Carbon::now()->addMinutes(Config::get('auth.verification.expire', $this->expires_at)),
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
