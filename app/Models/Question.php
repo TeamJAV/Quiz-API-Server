@@ -9,6 +9,7 @@ class Question extends Model
 {
     //
     use SoftDeletes;
+    
     protected $fillable = ["title", "explain", "correct_choices", "choices", "quiz_id"];
     public function quiz(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

@@ -9,7 +9,7 @@ class ResultDetail extends Model
 {
     //
     use SoftDeletes;
-    
+    protected $guarded = [];
     public function resultTest(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ResultTest::class, 'result_id');

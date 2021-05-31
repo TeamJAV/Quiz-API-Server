@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('email/verify/{id}/{hash}', 'Api\ApiVerificationController@verify')->name('verification.verify.api');
-Route::get('email/resend', 'Api\ApiVerificationController@resend')->name('verification.resend.api');
+Route::get('email/verify/{id}/{hash}', 'Api\Teacher\ApiVerificationController@verify')->name('verification.verify.api');
+Route::get('email/resend', 'Api\Teacher\ApiVerificationController@resend')->name('verification.resend.api');
+Route::get('time', 'Api\ApiTimeServer@index')->name('time_now');
 
-Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', 'api']], function () {
+Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Teacher'], function () {
 
     // Auth route
     Route::group(['prefix' => 'auth'], function () {
@@ -39,12 +40,37 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
         Route::post('create_question/{id}', 'Api\QuizController@createQuestion')->middleware('auth:api')->name('api.create-question');
         Route::post('edit_question/{id}', 'Api\QuizController@editQuestion')->middleware('auth:api')->name('api.edit-question');
         Route::post('delete_question/{id}', 'Api\QuizController@deleteQuestion')->middleware('auth:api')->name('api.delete-question');
+        Route::post('login', 'ApiAuthController@login')->name('api.login');
+        Route::post('signup', 'ApiAuthController@signup')->name('api.signup');
+        Route::post('logout', 'ApiAuthController@logout')->middleware('auth:api')->name('api.logout');
+        Route::post('email/password', 'ApiAuthController@forgot')->name('api.forgot-password');
     });
+
+    // For teacher
+    Route::group(['middleware' => ['auth:api', 'verified']], function () {
+        //User
+        Route::get('/', 'ApiUserController@index')->name('api.user-info');
+        Route::put('update', 'ApiUserController@update')->name('api.user-update');
+
+        //Room
+        Route::group(['prefix' => 'room'], function () {
+            Route::get('list/{search?}/{orderBy?}/{type?}', 'ApiRoomController@index')->name('api.room-list');
+            Route::post('create', 'ApiRoomController@store')->name('api.room-store');
+            Route::post('{room}/share', 'ApiRoomController@share')->name('api.room-share');
+            Route::post('launch', 'ApiRoomController@launchRoom')->name('api.room-launch');
+            Route::post('{room}/stop-launch', 'ApiRoomController@stopLaunchRoom')->name('api.room-stop');
+            Route::post('{room}/delete', 'ApiRoomController@delete')->name('api.room-delete');
+        });
+    });
+
+
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware(['auth:api', 'verified']);
+Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Student'], function () {
+    Route::get('join-room/{id}', 'ApiRoomController@joinRoom')->name('api.room-join');
+    Route::post('register', 'ApiRoomController@register')->name('api.room-register')->middleware('room-auth');
+});
+
 
 
 //Route::get("/all-user", function (){

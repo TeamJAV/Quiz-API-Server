@@ -28,8 +28,8 @@ class NewRoomRequest extends FormRequest
     {
         return [
             //
-            'id' => 'nullable|numeric',
-            'name' => 'required|min:1|max:25|unique:rooms,name,NULL,id,deleted_at,NULL',
+            'id' => 'nullable',
+            'name' => 'required|min:1|max:25',
             'status' => 'nullable',
             'is_shuffle' => 'nullable'
         ];
@@ -39,15 +39,27 @@ class NewRoomRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if (Room::query()->where('user_id', auth()->id())->count() > 20) {
-                $validator->errors()->add('name', 'You have reached the maximum of rooms');
+                $validator->errors()->add('name', 'You have reached the maximum of rooms.');
+            }
+            $room = auth()->user()->rooms()->where('name', $this->name)->first();
+            if ($this->id != null) {
+                if ($room && $room['id'] != $this->id) {
+                    $validator->errors()->add('name', 'The room name has already exists.');
+                }
+            } elseif ($room) {
+                $validator->errors()->add('name', 'The room name has already exists.');
             }
         });
     }
 
-    public function failedValidation(Validator $validator): \Illuminate\Http\JsonResponse
+    protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(
-            response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
-        );
+        $response = [
+            'status' => 422,
+            'success' => false,
+            'message' => $validator->errors()->first(),
+            'data' => $validator->errors()
+        ];
+        throw new HttpResponseException(response()->json($response, 422));
     }
 }
