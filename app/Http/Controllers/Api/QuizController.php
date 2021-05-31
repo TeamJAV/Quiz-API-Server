@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\QuestionRequest;
 use App\Http\Resources\QuizCollection;
@@ -10,6 +11,8 @@ use App\Models\Quiz;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Imports\Imports;
+use App\Exports\ExcelExports;
 
 class QuizController extends Controller
 {
@@ -86,5 +89,9 @@ class QuizController extends Controller
         }
         $question->delete();
         return Controller::responseJSON(200, true, "Xóa thành công");
+    }
+
+    public function exportExcel(Request $request){
+        return Excel::download( new ExcelExports($request), 'export.csv', \Maatwebsite\Excel\Excel::CSV, [ 'Content-Type' => 'text/csv', ] );
     }
 }
