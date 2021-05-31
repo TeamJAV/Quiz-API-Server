@@ -10,6 +10,8 @@ class Quiz extends Model
     //
     use SoftDeletes;
 
+    protected $fillable = ["title"];
+
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
