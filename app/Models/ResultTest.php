@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ResultTest extends Model
 {
     //
+    protected $guarded = [];
     use SoftDeletes;
-    
+
     public function room(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Room::class, 'room_id');
