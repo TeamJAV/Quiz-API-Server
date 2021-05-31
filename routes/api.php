@@ -22,6 +22,19 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
 
     // Auth route
     Route::group(['prefix' => 'auth'], function () {
+        Route::post('login', 'Api\ApiAuthController@login')->name('api.login');
+        Route::post('signup', 'Api\ApiAuthController@signup')->name('api.signup');
+        Route::post('logout', 'Api\ApiAuthController@logout')->middleware('auth:api')
+            ->name('api.logout');
+        Route::post('email/password', 'Api\ApiAuthController@forgot')->name('api.forgot-password');
+        Route::post('edit_quiz/{id}', 'Api\QuizController@editQuiz')->middleware('auth:api')->name('api.edit-quiz');
+        Route::post('create_quiz', 'Api\QuizController@createQuiz')->middleware('auth:api')->name('api.create-quiz');
+        Route::get('list_quiz', 'Api\QuizController@showAllQuiz')->middleware('auth:api')->name('api.all-quiz');
+        Route::post('delete_quiz/{id}', 'Api\QuizController@deleteQuiz')->middleware('auth:api')->name('api.delete-quiz');
+        Route::get('list_question', 'Api\QuizController@showAllQuestion')->middleware('auth:api')->name('api.all-question');
+        Route::post('create_question/{id}', 'Api\QuizController@createQuestion')->middleware('auth:api')->name('api.create-question');
+        Route::post('edit_question/{id}', 'Api\QuizController@editQuestion')->middleware('auth:api')->name('api.edit-question');
+        Route::post('delete_question/{id}', 'Api\QuizController@deleteQuestion')->middleware('auth:api')->name('api.delete-question');
         Route::post('login', 'ApiAuthController@login')->name('api.login');
         Route::post('signup', 'ApiAuthController@signup')->name('api.signup');
         Route::post('logout', 'ApiAuthController@logout')->middleware('auth:api')->name('api.logout');
