@@ -20,7 +20,25 @@ Route::get('time', 'Api\ApiTimeServer@index')->name('time_now');
 
 Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Teacher'], function () {
 
-    // Auth route
+
+    //API Quiz
+    Route::group(['prefix' => 'quiz'], function () {
+        Route::post('edit_quiz/{id}', 'Api\QuizController@editQuiz')->middleware('auth:api')->name('api.edit-quiz');
+        Route::post('create_quiz', 'Api\QuizController@createQuiz')->middleware('auth:api')->name('api.create-quiz');
+        Route::get('list_quiz', 'Api\QuizController@showAllQuiz')->middleware('auth:api')->name('api.all-quiz');
+        Route::post('delete_quiz/{id}', 'Api\QuizController@deleteQuiz')->middleware('auth:api')->name('api.delete-quiz');
+        Route::get('exportExcel', 'Api\QuizController@exportExcel')->middleware('auth:api')->name('api.export-quiz');
+
+
+    });
+    //API Question
+    Route::group(['prefix' => 'question'], function () {
+        Route::get('list_question', 'Api\QuizController@showAllQuestion')->middleware('auth:api')->name('api.all-question');
+        Route::post('create_question/{id}', 'Api\QuizController@createQuestion')->middleware('auth:api')->name('api.create-question');
+        Route::post('edit_question/{id}', 'Api\QuizController@editQuestion')->middleware('auth:api')->name('api.edit-question');
+        Route::post('delete_question/{id}', 'Api\QuizController@deleteQuestion')->middleware('auth:api')->name('api.delete-question');
+    });
+
     Route::group(['prefix' => 'auth'], function () {
         Route::post('login', 'Api\ApiAuthController@login')->name('api.login');
         Route::post('signup', 'Api\ApiAuthController@signup')->name('api.signup');
@@ -28,18 +46,6 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
             ->name('api.logout');
         Route::post('email/password', 'Api\ApiAuthController@forgot')->name('api.forgot-password');
 
-        //API Quiz
-        Route::post('edit_quiz/{id}', 'Api\QuizController@editQuiz')->middleware('auth:api')->name('api.edit-quiz');
-        Route::post('create_quiz', 'Api\QuizController@createQuiz')->middleware('auth:api')->name('api.create-quiz');
-        Route::get('list_quiz', 'Api\QuizController@showAllQuiz')->middleware('auth:api')->name('api.all-quiz');
-        Route::post('delete_quiz/{id}', 'Api\QuizController@deleteQuiz')->middleware('auth:api')->name('api.delete-quiz');
-        Route::get('exportExcel', 'Api\QuizController@exportExcel')->middleware('auth:api')->name('api.export-quiz');
-
-        //API Question
-        Route::get('list_question', 'Api\QuizController@showAllQuestion')->middleware('auth:api')->name('api.all-question');
-        Route::post('create_question/{id}', 'Api\QuizController@createQuestion')->middleware('auth:api')->name('api.create-question');
-        Route::post('edit_question/{id}', 'Api\QuizController@editQuestion')->middleware('auth:api')->name('api.edit-question');
-        Route::post('delete_question/{id}', 'Api\QuizController@deleteQuestion')->middleware('auth:api')->name('api.delete-question');
         Route::post('login', 'ApiAuthController@login')->name('api.login');
         Route::post('signup', 'ApiAuthController@signup')->name('api.signup');
         Route::post('logout', 'ApiAuthController@logout')->middleware('auth:api')->name('api.logout');
