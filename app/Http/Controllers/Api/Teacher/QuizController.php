@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Teacher;
 
+use App\Events\SubmitQuestionEvent;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\QuestionRequest;
@@ -93,5 +94,9 @@ class QuizController extends Controller
 
     public function exportExcel(Request $request){
         return Excel::download( new ExcelExports($request), 'export.csv', \Maatwebsite\Excel\Excel::CSV, [ 'Content-Type' => 'text/csv', ] );
+    }
+
+    public function eventSubmit(){
+        event(new SubmitQuestionEvent());
     }
 }

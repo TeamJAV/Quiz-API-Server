@@ -19,3 +19,6 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 Broadcast::channel('room.{id}', function ($id) {
     return \App\Models\Room::where('id', decrypt($id))->exists();
 });
+//Broadcast::channel('channel.{id}', function ($id) {
+//    return \App\Models\QuizCopy::where('id', $id)->exists();
+//});

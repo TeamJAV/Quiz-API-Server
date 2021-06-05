@@ -68,9 +68,9 @@ class Handler extends ExceptionHandler
         if ($exception instanceof AuthenticationException) {
             return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 403);
         }
-        if ($exception instanceof \Exception) {
-            return response()->json(['message' => 'Oops! Something went wrong'], 500);
-        }
+//        if ($exception instanceof \Exception) {
+//            return response()->json(['message' => 'Oops! Something went wrong'], 500);
+//        }
         return parent::render($request, $exception);
     }
 
