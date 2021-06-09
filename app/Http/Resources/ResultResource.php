@@ -3,12 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class QuizCollection extends JsonResource
+class ResultResource extends JsonResource
 {
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
@@ -17,8 +16,10 @@ class QuizCollection extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'title'=>$this->title,
-            'questions'=>$this->questions,
+            'quiz_copy_id'=>$this->quiz_copy_id,
+            'room_id'=>$this->room_id,
+            'date_create'=>$this->date_create,
+            'result'=>$this->resultDetails,
         ];
     }
 }

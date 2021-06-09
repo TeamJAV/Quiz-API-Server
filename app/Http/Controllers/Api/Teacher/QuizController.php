@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Teacher;
 
 use App\Events\SubmitQuestionEvent;
+use App\Http\Resources\QuestionCollection;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\QuestionRequest;
@@ -14,10 +15,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Imports\Imports;
 use App\Exports\ExcelExports;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
     public function showAllQuiz(Request $request){
+//         $q= Quiz::find($id) ;
+//        if(auth()->user()->can("showall",$q));
         $quizzes = auth()->user()->quizzes()->get();
         return self::responseJSON(200, true, 'Thành công', QuizCollection::collection($quizzes));
     }
@@ -27,10 +31,21 @@ class QuizController extends Controller
         return self::responseJSON(200, true, 'Tạo thành công', $room);
     }
 
-    public function editQuiz(Request $request, $id){
-        $quiz = auth()->user()->quizzes()->find($id)->first();
+    public function getQuizById(Request $request, $id){
+        $quiz = Quiz::find($id);
         if (!$quiz) {
-            return self::responseJSON(500, false, 'Không tìm thấy quiz.');
+            return self::responseJSON(404, false, 'Không tìm thấy quiz.');
+        }
+        if(!auth()->user()->can("view", $quiz)){
+            return self::responseJSON(403, false, 'Không tìm thấy quiz');
+        }
+        return self::responseJSON(200, true, 'Thành công', new QuizCollection($quiz));
+    }
+
+    public function editQuiz(Request $request, $id){
+        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
+        if (!$quiz) {
+            return self::responseJSON(404, false, 'Không tìm thấy quiz.');
         }
         if($request->quiz_title == null){
             return self::responseJSON(500, false, 'Tên không được để trống');
@@ -40,34 +55,57 @@ class QuizController extends Controller
         return self::responseJSON(200, true, 'Cập nhật thành công', $quiz);
     }
 
+    public function searchQuiz(Request $request, $title=null){
+        $search_result =Quiz::query()->where('user_id', '=', Auth::id());
+        if($title == null){
+            $search_result = $search_result->get();
+        }else{
+            $search_result = $search_result->where('title', 'like', '%'.$title.'%')->get();
+            if(!$search_result){
+                return self::responseJSON(404, false, 'Không có kết quả cho '. $title);
+            }
+        }
+        return self::responseJSON(200, true, 'Tìm kiếm thành công', QuizCollection::collection($search_result));
+    }
+
     public function deleteQuiz(Request $request, $id){
-        $quiz = auth()->user()->quizzes()->find($id)->first();
+        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
         if (!$quiz) {
-            return self::responseJSON(500, false, 'Không tìm thấy quiz.');
+            return self::responseJSON(404, false, 'Không tìm thấy quiz.');
         }
         $quiz->delete();
         return self::responseJSON(200, true, 'Xóa thành công');
     }
 
-    public function showAllQuestion(Request $request){
-        $question = Question::all();
-        return self::responseJSON(200, true, "Thành công", $question);
+    public function showAllQuestion(Request $request, $id){
+        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
+        if (!$quiz) {
+            return self::responseJSON(404, false, 'Không tìm thấy quiz.');
+        }
+        $question = Question::query()->where("quiz_id", $quiz->id)->get();
+        return self::responseJSON(200, true, "Thành công", QuestionCollection::collection($question));
     }
 
     public function createQuestion(QuestionRequest $request, $id): JsonResponse{
-        $quiz = auth()->user()->quizzes()->find($id)->first();
+        $question_img = null;
+        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
         if (!$quiz) {
             return self::responseJSON(500, false, 'Không tìm thấy quiz.');
+        }
+        if($request->img != null){
+            $question_img = $request->img->store('image', 'public');
         }
         $question = Question::create(
             ['title'=>$request->get('title'),
             'explain'=>$request->get('explain'),
             'choices'=>$request->get('choices'),
             'correct_choices'=>$request->get('correct'),
-            'quiz_id'=>$quiz->id]
+            'quiz_id'=>$quiz->id,
+            'img'=>$question_img,
+            ]
         );
-
-        return Controller::responseJSON(200, true);
+        $q = Question::with('quiz')->find($question->id);
+        return Controller::responseJSON(200, true, "Tạo thành công", new QuestionCollection($q));
     }
 
     public function editQuestion(QuestionRequest $request, $id): JsonResponse{

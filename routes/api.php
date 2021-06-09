@@ -27,6 +27,8 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
         Route::post('create_quiz', 'QuizController@createQuiz')->middleware('auth:api')->name('api.create-quiz');
         Route::get('list_quiz', 'QuizController@showAllQuiz')->middleware('auth:api')->name('api.all-quiz');
         Route::post('delete_quiz/{id}', 'QuizController@deleteQuiz')->middleware('auth:api')->name('api.delete-quiz');
+        Route::get('view_quiz/{id}', 'QuizController@getQuizById')->middleware('auth:api')->name('api.search-quiz');
+        Route::get('search_quiz/{title?}', 'QuizController@searchQuiz')->middleware('auth:api')->name('api.view-quiz');
         Route::get('exportExcel', 'QuizController@exportExcel')->middleware('auth:api')->name('api.export-quiz');
         Route::get('event_submit', 'QuizController@eventSubmit')->middleware('auth:api')->name('api.event-submit');
 
@@ -34,10 +36,16 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     });
     //API Question
     Route::group(['prefix' => 'question'], function () {
-        Route::get('list_question', 'QuizController@showAllQuestion')->middleware('auth:api')->name('api.all-question');
+        Route::get('list_question/{id}', 'QuizController@showAllQuestion')->middleware('auth:api')->name('api.all-question');
         Route::post('create_question/{id}', 'QuizController@createQuestion')->middleware('auth:api')->name('api.create-question');
         Route::post('edit_question/{id}', 'QuizController@editQuestion')->middleware('auth:api')->name('api.edit-question');
         Route::post('delete_question/{id}', 'QuizController@deleteQuestion')->middleware('auth:api')->name('api.delete-question');
+    });
+
+    //API Result
+    Route::group(['prefix' => 'result'], function () {
+        Route::get('all_result', 'ResultController@allHistoryTest')->middleware('auth:api')->name('api.all-result');
+        Route::get('detail_result', 'ResultController@allHistoryTest')->middleware('auth:api')->name('api.all-result');
     });
 
     Route::group(['prefix' => 'auth'], function () {
