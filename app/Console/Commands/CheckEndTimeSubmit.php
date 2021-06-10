@@ -15,7 +15,7 @@ class CheckEndTimeSubmit extends Command
      *
      * @var string
      */
-    protected $signature = 'command:check-room-online';
+    protected $signature = 'command:check-student-end';
 
     /**
      * The console command description.
