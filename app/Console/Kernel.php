@@ -2,7 +2,7 @@
 
 namespace App\Console;
 
-use App\Console\Commands\CheckRoomOnline;
+use App\Console\Commands\CheckEndTimeSubmit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        CheckRoomOnline::class
+        CheckEndTimeSubmit::class
     ];
 
     /**

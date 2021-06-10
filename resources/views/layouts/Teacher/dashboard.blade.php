@@ -22,6 +22,7 @@
             <h6 class="" style="padding-top: 34px;">Exit ticket</h6>
         </div>
     </div>
+    <img src="{{ asset('storage/image/Untitled-DESKTOP-H4UIP6L.png') }}" alt="">
     <div class="d-flex justify-content-center my-5">
         <h5 class="text-uppercase">Quick question</h5>
     </div>

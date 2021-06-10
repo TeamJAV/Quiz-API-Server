@@ -9,7 +9,9 @@ class QuizCopy extends Model
 {
     //
     use SoftDeletes;
-    
+
+    protected $guarded = [];
+
     public function quiz(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Quiz::class, "quiz_id");

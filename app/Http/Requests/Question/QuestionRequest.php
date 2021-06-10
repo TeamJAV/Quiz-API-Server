@@ -29,7 +29,8 @@ class QuestionRequest extends FormRequest
             'title' => 'required',
             'explain'=>'nullable',
             'choices'=>'required',
-            'correct_choice'=>'nullable'
+            'correct_choice'=>'nullable',
+            'question_type'=>'required|in:multiple,true-false,short-answer'
         ];
     }
 

@@ -8,6 +8,10 @@ use App\Http\Requests\Room\LaunchRoomRequest;
 use App\Http\Requests\Room\NewRoomRequest;
 use App\Http\Resources\RoomCollection;
 use App\Models\Room;
+use App\Repositories\Question\QuestionRepository;
+use App\Repositories\QuestionCopy\QuestionCopyRepository;
+use App\Repositories\Quiz\QuizRepository;
+use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
 use App\Repositories\Room\RoomRepository;
 use App\Repositories\User\UserRepository;
@@ -22,12 +26,21 @@ class ApiRoomController extends ApiBaseController
     private $roomRepository;
     private $userRepository;
     private $resultTestRepository;
+    private $quizRepository;
+    private $quizCopyRepository;
+    private $questionRepository;
+    private $questionCopyRepository;
 
-    public function __construct(RoomRepository $roomRepository, UserRepository $userRepository, ResultTestRepository $resultTestRepository)
+    public function __construct(RoomRepository $roomRepository, UserRepository $userRepository, ResultTestRepository $resultTestRepository,
+                                QuizRepository $quizRepository, QuizCopyRepository $quizCopyRepository, QuestionRepository $questionRepository, QuestionCopyRepository $questionCopyRepository)
     {
         $this->roomRepository = $roomRepository;
         $this->userRepository = $userRepository;
         $this->resultTestRepository = $resultTestRepository;
+        $this->quizRepository = $quizRepository;
+        $this->quizCopyRepository = $quizCopyRepository;
+        $this->questionRepository = $questionRepository;
+        $this->questionCopyRepository = $questionCopyRepository;
     }
 
 
@@ -67,14 +80,15 @@ class ApiRoomController extends ApiBaseController
         return self::responseJSON(200, true, 'Link join room', ['link' => $link]);
     }
 
-
     public function launchRoom(LaunchRoomRequest $request): JsonResponse
     {
         $room = $this->roomRepository->find($request->get('id'));
+        $quiz = $this->quizRepository->find($request->get('id_quiz'));
         try {
             $this->authorize('update', $room);
+            $this->authorize('view', $quiz);
         } catch (AuthorizationException $e) {
-            return self::response403('This room is not belong to you');
+            return self::response403($e->getMessage());
         }
         if ($room->status == 1) {
             return self::responseJSON(422, false, 'You must stop this room before launch again');
@@ -82,28 +96,40 @@ class ApiRoomController extends ApiBaseController
         $shuffle_answer = $request->get('shuffle_answer') == true ? 1 : 0;
         $shuffle_question = $request->get('shuffle_question') == true ? 1 : 0;
         $time_offline = $request->filled('time_offline') ? $request->get('time_offline') : null;
-        $room = $this->roomRepository->setUpRoomOnline($request->get('id'), [
-            'shuffle_question' => $shuffle_question,
-            'shuffle_answer' => $shuffle_answer,
-            'status' => 1,
-            'time_offline' => $time_offline
-        ]);
-        $resultTest = $this->resultTestRepository->create([
-            'status' => 1,
-            'date_create' => Carbon::now()->toDateTimeString(),
-            'room_id' => $request->get('id'),
-            'user_id' => $room->user_id,
-            'quiz_copy_id' => $request->get('id_quiz'),
-        ]);
+        try {
+            //Setup room online
+            $room = $this->roomRepository->setUpRoomOnline($room->id, [
+                'shuffle_question' => $shuffle_question,
+                'shuffle_answer' => $shuffle_answer,
+                'status' => 1,
+                'time_offline' => $time_offline
+            ]);
+            //Insert new quiz_copy
+            $quiz_copy = $quiz->quizCopies()->create(['title' => $quiz->title]);
+            //Insert new data to question_copy
+            $questions = $this->questionRepository->getAllQuestionsByQuizId($quiz->id);
+            $check_quiz_copy = $this->quizCopyRepository->createQuestionCopy($quiz_copy, $questions);
+            if ($check_quiz_copy) {
+                //Create a new result test
+                $result_test = $quiz_copy->resultTests()->create([
+                    'status' => 1,
+                    'date_create' => Carbon::now()->toDateTimeString(),
+                    'room_id' => $room->id,
+                    'user_id' => $room->user_id,
+                ]);
+            } else {
+                return self::responseJSON(500, false, "Can't create question copy'");
+            }
+        } catch (\Exception $e) {
+            return self::responseJSON(500, false, $e->getMessage());
+        }
+        //Pusher publish
         event(new RoomOnlineEvent($room));
         $context = [
             'room' => new RoomCollection($room),
-            'quiz' => [
-                'id' => $request->get('id_quiz'),
-            ],
-            'result_test' => [
-                'id' => $resultTest->id,
-            ]
+            'quiz' => ['id' => $quiz->id,],
+            'result_test' => ['id' => $result_test->id,],
+            'quiz_copy' => ['id' => $quiz_copy->id,]
         ];
         return self::responseJSON(200, true, 'Room online', $context);
     }
@@ -119,6 +145,7 @@ class ApiRoomController extends ApiBaseController
         try {
             $result_test = $this->resultTestRepository->getResultTestOnline($room->id);
             $this->resultTestRepository->update($result_test->id, ['status' => 0]);
+            $this->resultTestRepository->changeStatusDetails($result_test->id);
             event(new RoomOnlineEvent($room));
             return self::responseJSON(200, true, 'Stop launch room', new RoomCollection($room));
         } catch (\Exception $e) {
@@ -126,7 +153,7 @@ class ApiRoomController extends ApiBaseController
         }
     }
 
-    public function delete(Room $room): JsonResponse
+    public function delete(Request $request, Room $room): JsonResponse
     {
         try {
             $this->authorize('delete', $room);
@@ -137,12 +164,19 @@ class ApiRoomController extends ApiBaseController
         } catch (AuthorizationException $e) {
             return self::response403($e->getMessage());
         } catch (\Exception $e) {
-            return self::responseJSON(500, false, 'Server error');
+            return self::responseJSON(500, false, $e->getMessage());
         }
     }
 
-    public function restore(Request $request, Room $room)
+    public function restore(Request $request, $id): JsonResponse
     {
-
+        $room = $this->roomRepository->findTrash($id);
+        try {
+            $this->authorize('view', $room);
+            $room->restore();
+            return self::responseJSON(201, true, 'Restore success');
+        } catch (AuthorizationException $e) {
+            return self::response403();
+        }
     }
 }

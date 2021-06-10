@@ -6,7 +6,7 @@ namespace App\Repositories\ResultDetail;
 
 use App\Repositories\BaseRepository;
 
-class ResultDetailRepository extends BaseRepository implements IResultDetailRepository
+class ResultDetailRepository extends BaseRepository implements IResultDetailRepositoryInterface
 {
 
     public function getModel(): string

@@ -10,7 +10,7 @@ class Quiz extends Model
     //
     use SoftDeletes;
 
-    protected $fillable = ["title"];
+    protected $fillable = ["title", "user_id"];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -24,6 +24,6 @@ class Quiz extends Model
 
     public function quizCopies(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(QuizCopy::class, "quiz_copy_id");
+        return $this->hasMany(QuizCopy::class, "quiz_id");
     }
 }

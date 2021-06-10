@@ -57,31 +57,25 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof MethodNotAllowedHttpException) {
-            return response()->json(['message' => 'Method not allowed'], 405);
+            return response()->json(['message' => $exception->getMessage()], 405);
         }
         if ($exception instanceof NotFoundHttpException || $exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => 'Not found'], 404);
+            return response()->json(['message' =>$exception->getMessage()], 404);
         }
         if ($exception instanceof ServerException) {
-            return response()->json(['message' => 'Server maintenance'], 500);
+            return response()->json(['message' => $exception->getMessage()], 500);
         }
         if ($exception instanceof AuthenticationException) {
             return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 403);
         }
-        if ($exception instanceof \Exception) {
-            return response()->json(['message' => 'Oops! Something went wrong'], 500);
-        }
+//        if ($exception instanceof \Exception) {
+//            return response()->json(['message' => 'Oops! Something went wrong'], 500);
+//        }
         return parent::render($request, $exception);
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-//        if ($request->user() == null && $request->filled('email')) {
-//            $email = $request->get('email');
-//            $user = User::query()->where('email', $email)->first();
-//            $user->sendEmailVerificationNotification();
-//            return response()->json(['status' => 403, 'success' => false, 'message' => 'Please confirm your email to active this account'], 403);
-//        }
         return response()->json(['status' => 403, 'success' => false, 'message' => 'Forbidden'], 403);
     }
 }

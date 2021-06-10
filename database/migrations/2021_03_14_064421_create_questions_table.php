@@ -19,6 +19,7 @@ class CreateQuestionsTable extends Migration
             $table->longText('explain')->nullable();
             $table->longText('choices');
             $table->longText('correct_choices');
+            $table->enum('question_type', ['multiple', 'short-answer', 'true-false']);
             $table->unsignedBigInteger('quiz_id');
             $table->foreign('quiz_id')->references('id')->on('quizzes');
             $table->softDeletes();

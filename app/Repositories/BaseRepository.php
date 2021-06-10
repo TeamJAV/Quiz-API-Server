@@ -69,4 +69,8 @@ abstract class BaseRepository implements IRepositoryInterface
         }
         return false;
     }
+
+    public function findTrash($id){
+        return $this->model->withTrashed()->find($id);
+    }
 }

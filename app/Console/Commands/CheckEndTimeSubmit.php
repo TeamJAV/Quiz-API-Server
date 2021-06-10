@@ -3,11 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Events\RoomOnlineEvent;
+use App\Models\ResultDetail;
 use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class CheckRoomOnline extends Command
+class CheckEndTimeSubmit extends Command
 {
     /**
      * The name and signature of the console command.
@@ -40,15 +41,12 @@ class CheckRoomOnline extends Command
      */
     public function handle()
     {
-        $rooms = Room::query()->where('status', 1)->whereNotNull('time_offline')->get();
-        foreach ($rooms as $room) {
-            if (Carbon::now()->gte(Carbon::parse($room->time_offline))) {
-                $room->status = 0;
-                $room->shuffle_answer = 0;
-                $room->shuffle_question = 0;
-                $room->time_offline = null;
-                $room->save();
-                event(new RoomOnlineEvent($room->id, false));
+        $result_details = ResultDetail::query()->where("is_finished", 0)->get();
+        foreach ($result_details as $result_detail) {
+            $time_end = Carbon::parse($result_detail->time_end)->format("Y-m-d H:i");
+            if ($time_end == Carbon::now()->format("Y-m-d H:i")) {
+                $result_detail->status = 1;
+                $result_detail->save();
             }
         }
     }

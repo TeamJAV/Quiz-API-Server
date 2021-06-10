@@ -30,8 +30,8 @@ class LaunchRoomRequest extends FormRequest
             'id' => 'required|numeric',
             'id_quiz' => 'required|numeric',
             'time_offline' => 'nullable|numeric|gte:1|lte:120',
-            'shuffle_answer' => 'boolean',
-            'shuffle_question' => 'boolean'
+            'shuffle_answer' => 'required|boolean',
+            'shuffle_question' => 'required|boolean'
         ];
     }
 
