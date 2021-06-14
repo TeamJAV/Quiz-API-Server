@@ -45,7 +45,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     //API Result
     Route::group(['prefix' => 'result'], function () {
         Route::get('all_result', 'ResultController@allHistoryTest')->middleware('auth:api')->name('api.all-result');
-        Route::get('detail_result', 'ResultController@allHistoryTest')->middleware('auth:api')->name('api.all-result');
+        Route::get('detail_result/{id}', 'ResultController@detailHistory')->middleware('auth:api')->name('api.all-result');
     });
 
     Route::group(['prefix' => 'auth'], function () {

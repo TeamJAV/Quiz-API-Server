@@ -20,8 +20,6 @@ use Illuminate\Support\Facades\Auth;
 class QuizController extends Controller
 {
     public function showAllQuiz(Request $request){
-//         $q= Quiz::find($id) ;
-//        if(auth()->user()->can("showall",$q));
         $quizzes = auth()->user()->quizzes()->get();
         return self::responseJSON(200, true, 'Thành công', QuizCollection::collection($quizzes));
     }
@@ -37,26 +35,32 @@ class QuizController extends Controller
             return self::responseJSON(404, false, 'Không tìm thấy quiz.');
         }
         if(!auth()->user()->can("view", $quiz)){
-            return self::responseJSON(403, false, 'Không tìm thấy quiz');
+            return self::responseJSON(403, false, 'Quiz?');
         }
         return self::responseJSON(200, true, 'Thành công', new QuizCollection($quiz));
     }
 
     public function editQuiz(Request $request, $id){
-        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
+        $quiz = Quiz::find($id);
         if (!$quiz) {
             return self::responseJSON(404, false, 'Không tìm thấy quiz.');
         }
+        if(!auth()->user()->can("editQuiz", $quiz)){
+            return self::responseJSON(403, false, 'Không tìm thấy quiz!');
+        }
         if($request->quiz_title == null){
-            return self::responseJSON(500, false, 'Tên không được để trống');
+            return self::responseJSON(500, false, 'Tên không được để trống!');
         }
         $quiz->title = $request->quiz_title;
+        if(count($quiz->questions) == 0){
+            return self::responseJSON(500, false, 'Quiz cần có ít nhất 1 câu hỏi');
+        }
         $quiz->save();
         return self::responseJSON(200, true, 'Cập nhật thành công', $quiz);
     }
 
     public function searchQuiz(Request $request, $title=null){
-        $search_result =Quiz::query()->where('user_id', '=', Auth::id());
+        $search_result = Quiz::query()->where('user_id', '=', Auth::id());
         if($title == null){
             $search_result = $search_result->get();
         }else{
@@ -69,9 +73,12 @@ class QuizController extends Controller
     }
 
     public function deleteQuiz(Request $request, $id){
-        $quiz = auth()->user()->quizzes()->where('id', $id)->first();
+        $quiz = Quiz::find($id);
         if (!$quiz) {
             return self::responseJSON(404, false, 'Không tìm thấy quiz.');
+        }
+        if(!auth()->user()->can("delete", $quiz)){
+            return self::responseJSON(403, false, 'Không tìm thấy quiz!');
         }
         $quiz->delete();
         return self::responseJSON(200, true, 'Xóa thành công');

@@ -45,9 +45,9 @@ class QuizPolicy
      * @param  \App\Quiz  $quiz
      * @return mixed
      */
-    public function update(User $user, Quiz $quiz)
+    public function editQuiz(User $user, Quiz $quiz)
     {
-        //
+        return $user->id == $quiz->user_id;
     }
 
     /**
@@ -59,7 +59,7 @@ class QuizPolicy
      */
     public function delete(User $user, Quiz $quiz)
     {
-        //
+        return $user->id == $quiz->user_id;
     }
 
     /**

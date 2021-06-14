@@ -22,7 +22,7 @@ class QuestionCollection extends JsonResource
             'explain'=>$this->explain,
             'correct'=>$this->correct_choices,
 //            'img'=>$this->img != null ? public_path('storage/'.$this->img) : null,
-            'img'=>public_path().'/storage/'.$this->img,
+            'img'=>$this->img,
 
         ];
     }
