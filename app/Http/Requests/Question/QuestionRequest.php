@@ -31,6 +31,7 @@ class QuestionRequest extends FormRequest
             'choices'=>'required',
             'correct_choice'=>'nullable',
             'img'=>'nullable|mimes:jpeg,bmp,png',
+            'question_type'=>'required|in:multiple,true-false,short-answer'
         ];
     }
 

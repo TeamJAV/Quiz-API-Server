@@ -36,8 +36,7 @@ class ApiAuthController extends ApiBaseController
                 'send_again' => route('verification.resend.api'),
                 'access_token' => $token->accessToken,
                 'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
-            ]) ->cookie('_token', $token->accessToken, Carbon::now()->diffInMinutes(Carbon::parse($token->token->expires_at)),
-                '/', $request->getHttpHost(), true, true);
+            ])->cookie('_token', $token->accessToken);
         } catch (\Exception $exception) {
             return self::responseJSON(500, false, $exception->getMessage());
         }
@@ -46,7 +45,7 @@ class ApiAuthController extends ApiBaseController
     public function login(LoginRequest $request): \Illuminate\Http\JsonResponse
     {
         if (!Auth::attempt($request->only(['email', 'password']))) {
-            return self::responseJSON(401, false, 'Unauthorized');
+            return self::responseJSON(401, false, 'Please check your email or password again');
         }
         if (!$request->user()->hasVerifiedEmail()) {
             $request->user()->sendEmailVerificationNotification();
@@ -67,19 +66,16 @@ class ApiAuthController extends ApiBaseController
             ]
         ];
         return self::responseJSON(200, true, 'Login success', $context)
-            ->cookie('_token', $access_token, Carbon::now()->diffInMinutes(Carbon::parse($token->token->expires_at)),
-            '/', $request->getHttpHost(), true, true);
+            ->cookie('_token', $access_token);
 
     }
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
+        $this->middleware("auth:api");
         try {
-            if ($request->user()) {
-                $request->user()->token()->revoke();
-                return self::responseJSON(200, true, 'Logout success');
-            }
-            return self::responseJSON(400, false, 'User are not logged in');
+            $request->user()->token()->revoke();
+            return self::responseJSON(200, true, 'Logout success');
         } catch (\Exception $exception) {
             return self::responseJSON(500, false, $exception->getMessage());
         }

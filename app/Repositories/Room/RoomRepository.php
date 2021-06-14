@@ -35,6 +35,12 @@ class RoomRepository extends BaseRepository implements IRoomRepositoryInterface
             ->orderByRaw($orderBy . " " . $type)->paginate($this->perPage);
     }
 
+    public function getRoomByName($name)
+    {
+        $name = strtoupper($name);
+        return $this->model->with("user")->where("name", "like", $name)->first();
+    }
+
     public function setUpRoomOnline($id, $attributes = [])
     {
         $room = $this->find($id);

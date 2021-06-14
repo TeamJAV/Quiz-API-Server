@@ -10,7 +10,7 @@ class Question extends Model
     //
     use SoftDeletes;
 
-    protected $fillable = ["title", "explain", "correct_choices", "choices", "quiz_id", "img"];
+    protected $fillable = ["title", "explain", "correct_choices", "choices", "quiz_id", "img", "question_type"];
     public function quiz(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Quiz::class, 'quiz_id');

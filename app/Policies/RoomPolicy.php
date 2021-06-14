@@ -25,6 +25,11 @@ class RoomPolicy
         return true;
     }
 
+    public function view(User $user, Room $room): bool
+    {
+        return $user->id == $room->user_id;
+    }
+
     public function update(User $user, Room $room): bool
     {
         return $user->id == $room->user_id;

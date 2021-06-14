@@ -4,7 +4,14 @@ namespace App\Providers;
 
 // use App\Container\SettingLaunch;
 use App\Models\ResultTest;
+use App\Repositories\Quiz\IQuizRepositoryInterface;
+use App\Repositories\Quiz\QuizRepository;
+use App\Repositories\QuizCopy\IQuizCopyRepositoryInterface;
+use App\Repositories\QuizCopy\QuizCopyRepository;
+use App\Repositories\ResultDetail\IResultDetailRepositoryInterface;
+use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\IResultTestRepositoryInterface;
+use App\Repositories\ResultTest\ResultTestRepository;
 use App\Repositories\Room\IRoomRepositoryInterface;
 use App\Repositories\Room\RoomRepository;
 use Illuminate\Support\ServiceProvider;
@@ -29,7 +36,19 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->singleton(
             IResultTestRepositoryInterface::class,
-            ResultTest::class
+            ResultTestRepository::class
+        );
+        $this->app->singleton(
+            IResultDetailRepositoryInterface::class,
+            ResultDetailRepository::class
+        );
+        $this->app->singleton(
+            IQuizRepositoryInterface::class,
+            QuizRepository::class
+        );
+        $this->app->singleton(
+            IQuizCopyRepositoryInterface::class,
+            QuizCopyRepository::class
         );
     }
 

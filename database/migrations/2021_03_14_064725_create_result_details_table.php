@@ -18,6 +18,8 @@ class CreateResultDetailsTable extends Migration
             $table->string('student_name', 50)->nullable();
             $table->unsignedBigInteger('scores');
             $table->longText('student_choices')->nullable();
+            $table->timestamp('time_joined')->useCurrent();
+            $table->timestamp('time_end')->nullable();
             $table->unsignedBigInteger('result_id');
             $table->foreign('result_id')->references('id')->on('result_tests');
             $table->softDeletes();
