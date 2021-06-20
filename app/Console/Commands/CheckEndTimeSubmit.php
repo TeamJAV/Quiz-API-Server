@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Events\RoomOnlineEvent;
+use App\Events\ResultStudentReceiveEvent;
 use App\Models\ResultDetail;
-use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -22,7 +21,7 @@ class CheckEndTimeSubmit extends Command
      *
      * @var string
      */
-    protected $description = 'Change status room to 0';
+    protected $description = 'Check time to submit answer from student';
 
     /**
      * Create a new command instance.
@@ -37,16 +36,27 @@ class CheckEndTimeSubmit extends Command
     /**
      * Execute the console command.
      *
-     * @return int
      */
     public function handle()
     {
-        $result_details = ResultDetail::query()->where("is_finished", 0)->get();
-        foreach ($result_details as $result_detail) {
-            $time_end = Carbon::parse($result_detail->time_end)->format("Y-m-d H:i");
-            if ($time_end == Carbon::now()->format("Y-m-d H:i")) {
-                $result_detail->status = 1;
-                $result_detail->save();
+        $now = Carbon::now()->format("Y-m-d H:i");
+        $result_details = ResultDetail::query()
+            ->where("is_finished", 0)
+            ->whereRaw("DATE_FORMAT(time_end, '%Y-%m-%d\ %H:%i') = ?", $now)
+            ->get();
+        if ($result_details->count() == 0) {
+            $this->info("$now No student");
+        } else {
+            try {
+                foreach ($result_details as $result_detail) {
+                    $result_detail->is_finished = 1;
+                    $result_detail->save();
+                    event(new ResultStudentReceiveEvent($result_detail));
+                    $this->info("Student $result_detail->student_name stop exam");
+                }
+            } catch (\Exception $exception) {
+                $error = $exception->getMessage();
+                $this->info("Error: $error");
             }
         }
     }

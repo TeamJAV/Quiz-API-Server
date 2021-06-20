@@ -17,7 +17,7 @@ class QuizCollection extends ResourceCollection
         return [
             'id'=>$this->id,
             'title'=>$this->title,
-            'questions'=>$this->questions,
+            'questions' => $this->questions
         ];
     }
 }

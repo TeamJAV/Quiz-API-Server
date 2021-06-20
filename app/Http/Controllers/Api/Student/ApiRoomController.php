@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Api\Student;
 
 use App\Http\Controllers\Api\ApiBaseController;
+use App\Http\Resources\QuizCopyCollection;
 use App\Http\Resources\RoomCollection;
+use App\Models\QuizCopy;
+use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
 use App\Repositories\Room\RoomRepository;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -19,38 +21,19 @@ use Illuminate\Support\Facades\Validator;
  */
 class ApiRoomController extends ApiBaseController
 {
-    //
-    /**
-     * @var RoomRepository
-     */
     private $roomRepository;
-    /**
-     * @var ResultTestRepository
-     */
     private $resultTestRepository;
-    /**
-     * @var ResultDetailRepository
-     */
     private $resultDetailRepository;
+    private $quizCopyRepository;
 
-    /**
-     * ApiRoomController constructor.
-     * @param RoomRepository $roomRepository
-     * @param ResultTestRepository $resultTestRepository
-     * @param ResultDetailRepository $resultDetailRepository
-     */
-    public function __construct(RoomRepository $roomRepository, ResultTestRepository $resultTestRepository, ResultDetailRepository $resultDetailRepository)
+    public function __construct(RoomRepository $roomRepository, ResultTestRepository $resultTestRepository, ResultDetailRepository $resultDetailRepository, QuizCopyRepository $quizCopyRepository)
     {
         $this->roomRepository = $roomRepository;
         $this->resultTestRepository = $resultTestRepository;
         $this->resultDetailRepository = $resultDetailRepository;
+        $this->quizCopyRepository = $quizCopyRepository;
     }
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return JsonResponse
-     */
     public function joinRoom(Request $request, $id): JsonResponse
     {
         try {
@@ -62,15 +45,11 @@ class ApiRoomController extends ApiBaseController
             return self::responseJSON(400, false, 'Not exist this room');
         }
         // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-        return self::responseJSON(200, true, 'Join room success', ['room' => new RoomCollection($room)])
+        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
             ->cookie('r_id', $id);
 
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function joinRoomByName(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -86,14 +65,10 @@ class ApiRoomController extends ApiBaseController
             return self::responseJSON(400, false, 'Not exist this room');
         }
         // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-        return self::responseJSON(200, true, 'Join room success', ['room' => new RoomCollection($room)])
+        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
             ->cookie('r_id', encrypt($room->id));
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -111,13 +86,12 @@ class ApiRoomController extends ApiBaseController
         $result_detail = $this->resultTestRepository->creatResultDetailForStudent($result_test->quiz_copy_id, $result_test, $request->get("name"), $current_room->time_offline);
         return self::responseJSON(200, true, 'Register success',
             [
-                'name' => $request->get('name'),
-                'rd_id' => encrypt($result_detail->id)
+                'result_detail' => [
+                    'name' => $request->get('name'),
+                    'rd_id' => encrypt($result_detail->id),
+                ],
+                'room' => new RoomCollection($current_room),
+                'quiz' => new QuizCopyCollection(QuizCopy::with("questionCopies")->find($result_test->quiz_copy_id)),
             ])->cookie('rd_id', encrypt($result_detail->id));
-    }
-
-    private function _addStudentChoices($id_quiz)
-    {
-
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Teacher;
 
+use App\Events\ResultStudentReceiveEvent;
 use App\Events\RoomOnlineEvent;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Room\LaunchRoomRequest;
@@ -144,8 +145,16 @@ class ApiRoomController extends ApiBaseController
         $room = $this->roomRepository->setUpRoomOffline($room->id);
         try {
             $result_test = $this->resultTestRepository->getResultTestOnline($room->id);
+            if (!$result_test) {
+                return self::responseJSON(410, false, 'Room already offline');
+            }
             $this->resultTestRepository->update($result_test->id, ['status' => 0]);
             $this->resultTestRepository->changeStatusDetails($result_test->id);
+            $result_details = $result_test->resultDetails()->get();
+            foreach ($result_details as $result_detail) {
+                $result_detail->is_finished = 1;
+                event(new ResultStudentReceiveEvent($result_detail));
+            }
             event(new RoomOnlineEvent($room));
             return self::responseJSON(200, true, 'Stop launch room', new RoomCollection($room));
         } catch (\Exception $e) {

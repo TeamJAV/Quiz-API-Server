@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api\Teacher;
 
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Models\Question;
+use App\Models\ResultDetail;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ApiQuizController extends ApiBaseController
 {
@@ -34,7 +37,6 @@ class ApiQuizController extends ApiBaseController
         // Format user submit into db
 
 
-
         $question_true = $student_input->map(function ($item, $key) use ($question) {
             return $item == $question->filter(function ($value, $k) use ($key) {
                     if ($value->id == $key) return $value;
@@ -42,5 +44,20 @@ class ApiQuizController extends ApiBaseController
                 })->first()->correct_choices;
         });
         dd($question_true);
+    }
+
+    public function check(Request $request)
+    {
+        $result_details = ResultDetail::query()
+            ->where("is_finished", 0)
+            ->whereRaw("DATE_FORMAT(time_end, '%Y-%m-%d\ %H:%i') = ?", Carbon::now()->format("Y-m-d H:i"))
+            ->get();
+        foreach ($result_details as $result_detail) {
+            $time_end = Carbon::parse($result_detail->time_end)->format("Y-m-d H:i");
+//            if ($time_end == Carbon::now()->format("Y-m-d H:i")) {
+//                $result_detail->status = 1;
+//                $result_detail->save();
+//            }
+        }
     }
 }

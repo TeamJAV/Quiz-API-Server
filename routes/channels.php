@@ -19,3 +19,4 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 Broadcast::channel('room.{id}', function ($id) {
     return \App\Models\Room::where('id', decrypt($id))->exists();
 });
+Broadcast::channel("result_detail.{id}", \App\Broadcasting\ResultDetailChannel::class);
