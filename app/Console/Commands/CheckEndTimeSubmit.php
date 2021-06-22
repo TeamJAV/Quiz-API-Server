@@ -51,7 +51,7 @@ class CheckEndTimeSubmit extends Command
                 foreach ($result_details as $result_detail) {
                     $result_detail->is_finished = 1;
                     $result_detail->save();
-                    event(new ResultStudentReceiveEvent($result_detail));
+//                    event(new ResultStudentReceiveEvent($result_detail));
                     $this->info("Student $result_detail->student_name stop exam");
                 }
             } catch (\Exception $exception) {
