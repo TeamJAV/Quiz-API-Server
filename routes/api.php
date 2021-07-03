@@ -78,5 +78,6 @@ Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', '
     });
 });
 
-Route::get('/quiz-test', 'Api\Teacher\ApiQuizController@index');
-Route::get('/quiz-check', 'Api\Teacher\ApiQuizController@check');
+Route::get('/', function () {
+    return response()->json("Welcome to quiz API",200);
+});
