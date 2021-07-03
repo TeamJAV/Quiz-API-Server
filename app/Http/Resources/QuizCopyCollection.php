@@ -18,7 +18,7 @@ class QuizCopyCollection extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'questions' => QuestionStudentCollection::collection($this->whenLoaded("questionCopies")),
+            'questions' => QuestionCopyCollection::collection($this->whenLoaded("questionCopies")),
         ];
     }
 }
