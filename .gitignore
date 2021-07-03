@@ -11,4 +11,7 @@ npm-debug.log
 yarn-error.log
 .idea/
 .vscode/
+.rnd
 .env
+composer.json
+composer.lock

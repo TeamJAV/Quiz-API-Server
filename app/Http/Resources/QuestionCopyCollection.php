@@ -2,26 +2,25 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class QuestionCollection extends JsonResource
+class QuestionCopyCollection extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Transform the resource collection into an array.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function toArray($request): array
     {
         return [
-//            'quiz'=>$this->quiz,
             'id'=>$this->id,
             'title'=>$this->title,
             'choices'=>json_decode($this->choices),
             'explain'=>$this->explain,
-            'correct'=>$this->correct_choices,
+            'correct'=>json_decode($this->correct_choices),
             'question_type'=>$this->question_type,
 //            'img'=>$this->img != null ? public_path('storage/'.$this->img) : null,
             'img'=>$this->img,

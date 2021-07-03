@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Quiz;
+use App\Models\ResultTest;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class QuizPolicy
+class ResultPolicy
 {
     use HandlesAuthorization;
 
@@ -21,10 +21,16 @@ class QuizPolicy
         //
     }
 
-
-    public function view(User $user, Quiz $quiz)
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Models\ResultTest  $resultTest
+     * @return mixed
+     */
+    public function view(User $user, ResultTest $resultTest)
     {
-        return $user->id == $quiz->user_id;
+        return $user->id == $resultTest->user_id;
     }
 
     /**
@@ -42,34 +48,34 @@ class QuizPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Quiz  $quiz
+     * @param  \App\ResultTest  $resultTest
      * @return mixed
      */
-    public function editQuiz(User $user, Quiz $quiz)
+    public function update(User $user, ResultTest $resultTest)
     {
-        return $user->id == $quiz->user_id;
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Quiz  $quiz
+     * @param  \App\ResultTest  $resultTest
      * @return mixed
      */
-    public function delete(User $user, Quiz $quiz)
+    public function delete(User $user, ResultTest $resultTest)
     {
-        return $user->id == $quiz->user_id;
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Quiz  $quiz
+     * @param  \App\ResultTest  $resultTest
      * @return mixed
      */
-    public function restore(User $user, Quiz $quiz)
+    public function restore(User $user, ResultTest $resultTest)
     {
         //
     }
@@ -78,10 +84,10 @@ class QuizPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Quiz  $quiz
+     * @param  \App\ResultTest  $resultTest
      * @return mixed
      */
-    public function forceDelete(User $user, Quiz $quiz)
+    public function forceDelete(User $user, ResultTest $resultTest)
     {
         //
     }
