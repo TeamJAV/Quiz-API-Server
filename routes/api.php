@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,23 +55,23 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
         Route::get('/', 'ApiUserController@index')->name('api.user-info');
         Route::put('update', 'ApiUserController@update')->name('api.user-update');
 
-    // For student
-    Route::group(['middleware' => ['auth:api', 'verified']], function () {
-        //Route Room
-        Route::group(['prefix' => 'room'], function () {
-            Route::get('list/{search?}/{orderBy?}/{type?}', 'ApiRoomController@index')->name('api.room-list');
-            Route::post('create', 'ApiRoomController@store')->name('api.room-store');
-            Route::post('{room}/share', 'ApiRoomController@share')->name('api.room-share');
-            Route::post('launch', 'ApiRoomController@launchRoom')->name('api.room-launch');
-            Route::post('{room}/stop-launch', 'ApiRoomController@stopLaunchRoom')->name('api.room-stop');
-            Route::post('{room}/delete', 'ApiRoomController@delete')->name('api.room-delete');
-            Route::post('{room}/restore', 'ApiRoomController@restore')->name('api.room-restore');
+        // For student
+        Route::group(['middleware' => ['auth:api', 'verified']], function () {
+            //Route Room
+            Route::group(['prefix' => 'room'], function () {
+                Route::get('list/{search?}/{orderBy?}/{type?}', 'ApiRoomController@index')->name('api.room-list');
+                Route::post('create', 'ApiRoomController@store')->name('api.room-store');
+                Route::post('{room}/share', 'ApiRoomController@share')->name('api.room-share');
+                Route::post('launch', 'ApiRoomController@launchRoom')->name('api.room-launch');
+                Route::post('{room}/stop-launch', 'ApiRoomController@stopLaunchRoom')->name('api.room-stop');
+                Route::post('{room}/delete', 'ApiRoomController@delete')->name('api.room-delete');
+                Route::post('{room}/restore', 'ApiRoomController@restore')->name('api.room-restore');
+            });
         });
+
+
     });
-
-
 });
-
 // For student
 Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Student'], function () {
     // Route user
@@ -88,5 +87,5 @@ Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', '
 });
 
 Route::get('/', function () {
-    return response()->json("Welcome to quiz API",200);
+    return response()->json("Welcome to quiz API", 200);
 });

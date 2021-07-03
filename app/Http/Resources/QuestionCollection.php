@@ -16,7 +16,6 @@ class QuestionCollection extends JsonResource
     public function toArray($request): array
     {
         return [
-//            'quiz'=>$this->quiz,
             'id'=>$this->id,
             'title'=>$this->title,
             'choices'=>json_decode($this->choices),

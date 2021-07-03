@@ -54,6 +54,6 @@ class ApiExamController extends ApiBaseController
     public function ip(Request $request)
     {
         dd($this->getIp(), $_SERVER['REMOTE_ADDR']);
-        dd($request->getClientIp(), $request->getClientIps(), $request->ip());
+//        dd($request->getClientIp(), $request->getClientIps(), $request->ip());
     }
 }
