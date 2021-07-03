@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\QuestionCopyCollection;
 use App\Http\Resources\ResultCollection;
 use App\Models\QuestionCopy;
 use App\Models\ResultDetail;
@@ -42,25 +43,27 @@ class ResultController extends Controller
             $a = json_decode($detail[$i]['student_choices'], true);
             foreach ($a as $key=>$val){
                 if($key == $question->id){
-                    $std_choice = array_flip($val['choices']); //đổi vị trí key, value
-                    array_push($ans_list, $std_choice);
+                    foreach($val['choices'] as $choice=>$data){
+                        array_push($ans_list, $data);
+                    }
                 }
             }
         }
+
         sort($ans_list);
         $percent = array();
-        $count = 0;
-        for ($i = 0; $i < $num_student; $i++){
-
-            array_push($percent, $ans_list[$i]);
-        }
-        for ($i = 1; $i < $num_student; $i++){
-            if($ans_list[$i] == $ans_list[$i-1]){
-                $count += 1;
+        for($i = 0; $i < $num_student; $i++){
+            if (array_key_exists($ans_list[$i],$percent)){
+                $percent[$ans_list[$i]] += 1;
             }else{
-                dd($percent[$ans_list[$i]]);
+                $percent[$ans_list[$i]] = 1;
             }
         }
-        dd($percent);
+
+        foreach($percent as $key=>$value){
+            $percent[$key] = $value / ($num_student) * 100;
+        }
+        return self::responseJSON(200, true, 'Thành công', ['question'=> new QuestionCopyCollection($question),
+                                                                                'percent'=>$percent]);
     }
 }

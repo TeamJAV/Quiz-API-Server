@@ -18,7 +18,8 @@ class QuizCollection extends JsonResource
         return [
             'id'=>$this->id,
             'title'=>$this->title,
-            'questions'=>$this->questions,
+            'created_at'=>$this->created_at,
+//            'questions'=>$this->questions,
         ];
     }
 }
