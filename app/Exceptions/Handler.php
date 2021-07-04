@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\User;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -60,13 +61,18 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => $exception->getMessage()], 405);
         }
         if ($exception instanceof NotFoundHttpException || $exception instanceof ModelNotFoundException) {
-            return response()->json(['message' =>$exception->getMessage()], 404);
+            return response()->json(['message' => $exception->getMessage()], 404);
         }
         if ($exception instanceof ServerException) {
             return response()->json(['message' => $exception->getMessage()], 500);
         }
-        if ($exception instanceof AuthenticationException) {
+        if (!$request->user() ||
+            ($request->user() instanceof MustVerifyEmail &&
+                !$request->user()->hasVerifiedEmail())) {
             return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 403);
+        }
+        if ($exception instanceof AuthenticationException) {
+            return response()->json(['message' => $exception->getMessage()], 403);
         }
 //        if ($exception instanceof \Exception) {
 //            return response()->json(['message' => 'Oops! Something went wrong'], 500);

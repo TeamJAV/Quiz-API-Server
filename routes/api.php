@@ -89,5 +89,9 @@ Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', '
 });
 
 Route::get('/', function () {
-    return response()->json("Welcome to quiz API", 200);
+    return response()->json([
+        "message" => "Welcome to quiz API",
+        "status" => 200,
+        "data" => []
+    ], 200);
 });
