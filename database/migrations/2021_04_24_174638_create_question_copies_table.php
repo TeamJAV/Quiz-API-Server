@@ -22,6 +22,7 @@ class CreateQuestionCopiesTable extends Migration
             $table->enum('question_type', ['multiple', 'short-answer', 'true-false']);
             $table->unsignedBigInteger('quiz_copy_id');
             $table->foreign('quiz_copy_id')->references('id')->on('quiz_copies');
+            $table->string('img')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
