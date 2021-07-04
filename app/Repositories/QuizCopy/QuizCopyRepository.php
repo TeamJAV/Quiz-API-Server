@@ -25,6 +25,7 @@ class QuizCopyRepository extends BaseRepository implements IQuizCopyRepositoryIn
                     'choices' => $item->choices,
                     'correct_choices' => $item->correct_choices,
                     'question_type' => $item->question_type,
+                    'img' => $item->img
                 ]);
             });
             return true;

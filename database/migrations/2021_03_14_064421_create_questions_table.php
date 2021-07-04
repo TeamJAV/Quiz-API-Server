@@ -22,6 +22,7 @@ class CreateQuestionsTable extends Migration
             $table->enum('question_type', ['multiple', 'short-answer', 'true-false']);
             $table->unsignedBigInteger('quiz_id');
             $table->foreign('quiz_id')->references('id')->on('quizzes');
+            $table->string('img')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
