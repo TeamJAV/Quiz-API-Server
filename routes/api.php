@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -93,7 +94,15 @@ Route::get('/', function () {
         "message" => "Welcome to quiz API",
         "status" => 200,
         "data" => [
-            'image' => asset("storage/image")
+            'image_path' => asset("storage/image"),
+            'users' => \App\Http\Resources\UserCollection::collection(\App\User::all())
         ]
     ], 200);
+});
+
+Route::get('/clear', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('config:cache');
+    dd("Cache clear");
 });
