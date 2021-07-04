@@ -8,6 +8,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -36,7 +38,7 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param \Throwable $exception
+     * @param Throwable $exception
      * @return void
      *
      * @throws \Exception
@@ -49,11 +51,11 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Throwable $exception
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param Throwable $exception
+     * @return Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function render($request, Throwable $exception)
     {
@@ -66,22 +68,20 @@ class Handler extends ExceptionHandler
         if ($exception instanceof ServerException) {
             return response()->json(['message' => $exception->getMessage()], 500);
         }
-        if (!$request->user() ||
-            ($request->user() instanceof MustVerifyEmail &&
-                !$request->user()->hasVerifiedEmail())) {
-            return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 403);
+        if ($exception instanceof MustVerifyEmail) {
+            return response()->json(['message' => 'Verify email', 'link' => route('verification.resend.api')], 401);
         }
         if ($exception instanceof AuthenticationException) {
             return response()->json(['message' => $exception->getMessage()], 403);
         }
-//        if ($exception instanceof \Exception) {
-//            return response()->json(['message' => 'Oops! Something went wrong'], 500);
-//        }
+        if ($exception instanceof \Exception) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
         return parent::render($request, $exception);
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return response()->json(['status' => 403, 'success' => false, 'message' => 'Forbidden'], 403);
+        return response()->json(['message' => 'Forbidden'], 403);
     }
 }

@@ -92,6 +92,8 @@ Route::get('/', function () {
     return response()->json([
         "message" => "Welcome to quiz API",
         "status" => 200,
-        "data" => []
+        "data" => [
+            'image' => asset("storage/image")
+        ]
     ], 200);
 });
