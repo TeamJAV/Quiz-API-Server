@@ -39,7 +39,7 @@ class ResultStudentReceiveEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'result_student_channel';
+        return 'result_student_receive';
     }
 
     public function broadcastWith(): array

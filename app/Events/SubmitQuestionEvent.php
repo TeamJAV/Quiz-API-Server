@@ -2,9 +2,11 @@
 
 namespace App\Events;
 
+use App\Models\QuestionCopy;
+use App\Models\ResultDetail;
+use App\Models\ResultTest;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -13,27 +15,43 @@ use Illuminate\Queue\SerializesModels;
 class SubmitQuestionEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    public $resultTest;
 
-    public $msg;
-    public $quiz_copy_id;
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param ResultTest $resultTest
      */
-    public function __construct()
+    public function __construct(ResultTest $resultTest)
     {
-//        $this->quiz_copy_id = $quizCopy->id;
-        $this->msg = "oooop";
+        $this->resultTest = $resultTest;
     }
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel.'.$this->quiz_copy_id);
+        return new PrivateChannel('result_teacher.'.$this->resultTest->id);
+    }
+
+    public function broadcastWith(): array
+    {
+        $resultDetail = $this->resultTest->resultDetails()->get();
+        $resultDetail->transform(function ($record) {
+            $record->student_choices = json_decode($record->student_choices, true);
+            $record->student_choices = array_map(function ($r) {
+                $id = array_key_first($r);
+                $r["question_id"] = $id;
+                $r["content"] = QuestionCopy::find($id)->title;
+                $r["student_choice"] = $r[$id];
+                unset($r[$id]);
+                return $r;
+            }, $record->student_choices);
+            return $record;
+        });
+        return $resultDetail->toArray();
     }
 }

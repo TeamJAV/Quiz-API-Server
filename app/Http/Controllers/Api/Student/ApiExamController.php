@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Student;
 
+use App\Events\SubmitQuestionEvent;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
@@ -33,6 +34,7 @@ class ApiExamController extends ApiBaseController
         try {
             $result_test = $this->resultTestRepository->getResultTestOnline($room->id);
             $this->resultDetailRepository->solveResult($result_detail, $request->input('answer'), $result_test->quiz_copy_id);
+            event(new SubmitQuestionEvent($result_test));
             return self::responseJSON(201, true);
         } catch (\Exception $exception) {
             return self::responseJSON(500, false, $exception->getMessage());
@@ -54,6 +56,5 @@ class ApiExamController extends ApiBaseController
     public function ip(Request $request)
     {
         dd($this->getIp(), $_SERVER['REMOTE_ADDR']);
-//        dd($request->getClientIp(), $request->getClientIps(), $request->ip());
     }
 }

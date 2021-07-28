@@ -154,9 +154,9 @@ class ApiRoomController extends ApiBaseController
             $result_details = $result_test->resultDetails()->get();
             foreach ($result_details as $result_detail) {
                 $result_detail->is_finished = 1;
-                event(new ResultStudentReceiveEvent($result_detail));
+//                event(new ResultStudentReceiveEvent($result_detail));
             }
-            event(new RoomOnlineEvent($room));
+            event(new RoomOnlineEvent($room, true));
             return self::responseJSON(200, true, 'Stop launch room', new RoomCollection($room));
         } catch (\Exception $e) {
             return self::responseJSON(410, false, 'Room already offline');
