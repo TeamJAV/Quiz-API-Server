@@ -25,7 +25,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     //API Result
     Route::group(['prefix' => 'result', 'middleware' => ['auth:api', 'verified']], function () {
         Route::get('all_result', 'ResultController@allHistoryTest')->name('api.all-result');
-        Route::get('detail_result/{id}', 'ResultController@detailHistory')->name('api.all-result');
+        Route::get('detail_result/{id}', 'ResultController@detailHistory')->name('api.detail-result');
         Route::get('detail_result/{result_id}/question/{question_copy_id?}', 'ResultController@getQuestionResultDetail')->name('api.question-result');
     });
 
@@ -35,7 +35,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
         Route::post('create_quiz', 'QuizController@createQuiz')->name('api.create-quiz');
         Route::get('list_quiz', 'QuizController@showAllQuiz')->name('api.all-quiz');
         Route::get('view_quiz/{id}', 'QuizController@getQuizById')->name('api.view-quiz');
-        Route::get('search_quiz/{title?}', 'QuizController@searchQuiz')->name('api.view-quiz');
+        Route::get('search_quiz/{title?}', 'QuizController@searchQuiz')->name('api.search-quiz');
         Route::post('delete_quiz/{id}', 'QuizController@deleteQuiz')->name('api.delete-quiz');
     });
 
