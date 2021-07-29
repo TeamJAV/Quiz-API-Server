@@ -24,8 +24,9 @@ class RoomOnlineEvent implements ShouldBroadcast
     public $shuffle_question;
     public $shuffle_answer;
     public $time_end;
+    public $is_test;
 
-    public function __construct($room)
+    public function __construct($room, $is_test = false)
     {
         //
         $this->room_id = $room->id;
@@ -33,6 +34,7 @@ class RoomOnlineEvent implements ShouldBroadcast
         $this->shuffle_question = $room->shuffle_question != 0;
         $this->shuffle_answer = $room->shuffle_answer != 0;
         $this->time_end = $room->time_end;
+        $this->is_test = $is_test;
     }
 
     /**
@@ -71,6 +73,7 @@ class RoomOnlineEvent implements ShouldBroadcast
                     'id' => $this->room_id,
                 ],
                 'is_online' => $this->online,
+                'is_test' => $this->is_test
             ];
         }
     }

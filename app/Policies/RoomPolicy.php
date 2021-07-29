@@ -45,4 +45,5 @@ class RoomPolicy
         return $user->id == $room->user_id;
 
     }
+
 }

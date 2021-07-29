@@ -27,16 +27,11 @@ class ApiQuizController extends ApiBaseController
         });
 
         // Format user submit choices
-//        $student_input = "{\"1\": [\"C\"], \"2\":
-// [\"D\", \"A\", \"C\"]}";
         $student_input = "{\"1\": [\"C\"]}";
         $student_input = collect(json_decode($student_input))->transform(function ($item, $index) {
             return collect($item)->sort();
         });
-
         // Format user submit into db
-
-
         $question_true = $student_input->map(function ($item, $key) use ($question) {
             return $item == $question->filter(function ($value, $k) use ($key) {
                     if ($value->id == $key) return $value;
@@ -54,10 +49,6 @@ class ApiQuizController extends ApiBaseController
             ->get();
         foreach ($result_details as $result_detail) {
             $time_end = Carbon::parse($result_detail->time_end)->format("Y-m-d H:i");
-//            if ($time_end == Carbon::now()->format("Y-m-d H:i")) {
-//                $result_detail->status = 1;
-//                $result_detail->save();
-//            }
         }
     }
 }

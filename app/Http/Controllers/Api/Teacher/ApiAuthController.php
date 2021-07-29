@@ -60,9 +60,9 @@ class ApiAuthController extends ApiBaseController
         $context = [
             'user' => new UserCollection($request->user()),
             'token' => [
-            'access_token' => $access_token,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
+                'access_token' => $access_token,
+                'token_type' => 'Bearer',
+                'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
             ]
         ];
         return self::responseJSON(200, true, 'Login success', $context)
@@ -72,7 +72,6 @@ class ApiAuthController extends ApiBaseController
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
-        $this->middleware("auth:api");
         try {
             $request->user()->token()->revoke();
             return self::responseJSON(200, true, 'Logout success');

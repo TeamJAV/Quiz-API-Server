@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Quiz;
+use App\Models\ResultTest;
 use App\Models\Room;
 use App\Policies\QuizPolicy;
+use App\Policies\ResultPolicy;
 use App\Policies\RoomPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -18,9 +20,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-         'App\Model' => 'App\Policies\ModelPolicy',
+        'App\Model' => 'App\Policies\ModelPolicy',
         Room::class => RoomPolicy::class,
-        Quiz::class => QuizPolicy::class
+        Quiz::class=>QuizPolicy::class,
+        ResultTest::class=>ResultPolicy::class
     ];
 
     /**
