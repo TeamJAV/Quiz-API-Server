@@ -35,10 +35,14 @@ class QuestionRequest extends FormRequest
         ];
     }
 
-    public function failedValidation(Validator $validator): \Illuminate\Http\JsonResponse
+    protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(
-            response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
-        );
+        $response = [
+            'status' => 422,
+            'success' => false,
+            'message' => $validator->errors()->first(),
+            'data' => $validator->errors()
+        ];
+        throw new HttpResponseException(response()->json($response, 422));
     }
 }
