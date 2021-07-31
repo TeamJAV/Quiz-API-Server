@@ -115,7 +115,7 @@ class QuizController extends Controller
             if ($validator->fails()) {
                 return self::responseJSON(422, false, $$validator->errors()->first());
             }
-            $question_img = $validator["img"]->store('image', 'public');
+            $question_img = $request->img->store('image', 'public');
         }
         if ($request->question_type == 'multiple') {
             if (count((array)json_decode($request->choices)) < 2) {
