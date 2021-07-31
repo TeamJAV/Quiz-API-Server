@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Teacher;
 
 use App\Http\Resources\QuestionCollection;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\QuestionRequest;
@@ -104,8 +105,17 @@ class QuizController extends Controller
         if (!$quiz) {
             return self::responseJSON(500, false, 'Không tìm thấy quiz.');
         }
-        if ($request->img != null) {
-            $question_img = $request->img->store('image', 'public');
+//        if ($request->img != null) {
+//            $question_img = $request->img->store('image', 'public');
+//        }
+        if ($request->hasFile("img")) {
+            $validator = Validator::make($request->only("img"), [
+                'img' => 'nullable|mimes:jpeg,bmp,png',
+            ]);
+            if ($validator->fails()) {
+                return self::responseJSON(422, false, $$validator->errors()->first());
+            }
+            $question_img = $validator["img"]->store('image', 'public');
         }
         if ($request->question_type == 'multiple') {
             if (count((array)json_decode($request->choices)) < 2) {
