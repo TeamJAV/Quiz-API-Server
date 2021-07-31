@@ -10,7 +10,7 @@ class Quiz extends Model
     //
     use SoftDeletes;
 
-    protected $fillable = ["title", "user_id"];
+    protected $fillable = ["id", "title", "user_id"];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
