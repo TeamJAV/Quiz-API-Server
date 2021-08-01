@@ -22,8 +22,8 @@ class QuestionCollection extends JsonResource
             'explain' => $this->explain,
             'correct' => json_decode($this->correct_choices),
             'question_type' => $this->question_type,
-//            'img'=>$this->img != null ? public_path('storage/'.$this->img) : null,
-            'img' => $this->img,
+            'img'=>$this->img != null ? asset('storage/'.$this->img) : null,
+//            'img' => $this->img,
 
         ];
     }

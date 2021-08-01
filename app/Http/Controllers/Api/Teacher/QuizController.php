@@ -115,14 +115,13 @@ class QuizController extends Controller
             if ($validator->fails()) {
                 return self::responseJSON(422, false, $$validator->errors()->first());
             }
-            $question_img = $request->img->store('image', 'public');
+            $question_img = $request->file("img")->store('image', 'public');
         }
         if ($request->question_type == 'multiple') {
             if (count((array)json_decode($request->choices)) < 2) {
                 return self::responseJSON(500, false, 'Cần có ít nhất 2 câu trả lời.');
             }
         }
-
         $question = Question::create(
             ['title' => $request->get('title'),
                 'explain' => $request->get('explain'),
@@ -141,8 +140,17 @@ class QuizController extends Controller
     public function editQuestion(QuestionRequest $request, $id): JsonResponse
     {
         $question_img = null;
-        if ($request->img != null) {
-            $question_img = $request->img->store('image', 'public');
+//        if ($request->img != null) {
+//            $question_img = $request->img->store('image', 'public');
+//        }
+        if ($request->hasFile("img")) {
+            $validator = Validator::make($request->only("img"), [
+                'img' => 'nullable|mimes:jpeg,bmp,png',
+            ]);
+            if ($validator->fails()) {
+                return self::responseJSON(422, false, $$validator->errors()->first());
+            }
+            $question_img = $request->file("img")->store('image', 'public');
         }
         $question = Question::find($id);
         if (!$question) {
