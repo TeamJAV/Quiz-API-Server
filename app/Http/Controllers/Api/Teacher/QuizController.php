@@ -163,7 +163,8 @@ class QuizController extends Controller
         $question->question_type = $request->question_type;
         $question->img = $question_img;
         $question->save();
-        return Controller::responseJSON(200, true, "", $question);
+        $q = Question::with('quiz')->find($question->id);
+        return Controller::responseJSON(200, true, "Chỉnh sửa thành công", new QuestionCollection($q));
     }
 
     public function deleteQuestion($id)
