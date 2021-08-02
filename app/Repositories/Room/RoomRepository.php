@@ -36,7 +36,7 @@ class RoomRepository extends BaseRepository implements IRoomRepositoryInterface
         if  ($paginate) {
             return $data->paginate($this->perPage);
         }
-        return $data;
+        return $data->get();
     }
 
     public function getRoomByName($name)
