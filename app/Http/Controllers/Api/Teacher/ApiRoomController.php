@@ -52,6 +52,13 @@ class ApiRoomController extends ApiBaseController
         return self::responseJSON(200, true, 'List all rooms', ['room' => RoomCollection::collection($rooms)]);
     }
 
+    public function indexGetAll(Request $request, $orderBy = "id", $type = "asc"): JsonResponse
+    {
+        $search = $request->filled("q") ? $request->get("q") : null;
+        $rooms = $this->roomRepository->getRoomByNamePaginate(auth()->id(), $search, $orderBy, $type, $request->get('trash'), false);
+        return self::responseJSON(200, true, 'List all rooms', ['room' => RoomCollection::collection($rooms)]);
+    }
+
     public function store(NewRoomRequest $request): JsonResponse
     {
         $attr = [

@@ -64,7 +64,8 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     Route::group(['middleware' => ['auth:api', 'verified']], function () {
         //Route Room
         Route::group(['prefix' => 'room'], function () {
-            Route::get('list/{orderBy?}/{type?}', 'ApiRoomController@index')->name('api.room-list');
+            Route::get('list/{orderBy?}/{type?}', 'ApiRoomController@index')->name('api.room-list-paginate');
+            Route::get('list-all/{orderBy?}/{type?}', 'ApiRoomController@indexGetAll')->name('api.room-list-all');
             Route::post('create', 'ApiRoomController@store')->name('api.room-store');
             Route::post('{room}/share', 'ApiRoomController@share')->name('api.room-share');
             Route::post('launch', 'ApiRoomController@launchRoom')->name('api.room-launch');
