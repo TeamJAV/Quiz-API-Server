@@ -70,7 +70,7 @@ class ApiRoomController extends ApiBaseController
             if (auth()->user()->cant('update', $room)) {
                 return self::response403('This room is not belong to you');
             }
-            $this->roomRepository->update($request->get('id'), $attr);
+            $room = $this->roomRepository->update($request->get('id'), $attr);
             return self::responseJSON(200, true, 'Update success', ['room' => new RoomCollection($room)]);
         }
         $room = $this->roomRepository->create($attr);
