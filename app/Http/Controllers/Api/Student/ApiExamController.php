@@ -64,7 +64,11 @@ class ApiExamController extends ApiBaseController
         return self::responseJSON(200, true, 'Result', [
             'student' => $result_detail->student_name,
             'student_choices' => json_encode($result_detail->student_choices),
-            'time_do_seconds' => Carbon::now()->diffInSeconds(Carbon::createFromFormat("%Y-%m-%d %H-%i-%s", $result_detail->time_joined))
+            'scores' => $result_detail->scores,
+            'time_joined' => $result_detail->time_joined,
+            'time_end' => $result_detail->time_end,
+            'time_do_seconds' => Carbon::now()->diffInSeconds(Carbon::createFromFormat("%Y-%m-%d %H-%i-%s", $result_detail->time_joined)),
+            'result_test_id' => $result_detail->result_id,
         ]);
     }
 

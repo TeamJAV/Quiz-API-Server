@@ -29,7 +29,6 @@ class ExamMiddleware
         try {
             $result_detail_id = decrypt($request->header('rd_id'));
             $result_detail = ResultDetail::find($result_detail_id);
-//            dd($result_detail);
             if (Carbon::now()->second(0)->gt(Carbon::parse($result_detail->time_end)) && $result_detail->is_finished == 0){
                 return response()->json([
                     'status' => 400,

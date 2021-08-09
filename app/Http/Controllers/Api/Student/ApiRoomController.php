@@ -89,6 +89,8 @@ class ApiRoomController extends ApiBaseController
                 'result_detail' => [
                     'name' => $request->get('name'),
                     'rd_id' => encrypt($result_detail->id),
+                    'key_channel' => $result_detail->timestamp_out,
+                    'time_end' => $result_detail->time_end
                 ],
                 'room' => new RoomCollection($current_room),
 //                'quiz' => new QuizCopyCollection(QuizCopy::with("questionCopies")->find($result_test->quiz_copy_id)),

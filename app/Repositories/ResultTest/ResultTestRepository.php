@@ -41,13 +41,15 @@ class ResultTestRepository extends BaseRepository implements IResultTestReposito
                 ]
             ];
         });
-        $now = Carbon::now()->second(0);
+        $now = Carbon::now();
+        $end = $now->addMinutes($time_offline);
         return $result_test->resultDetails()->create([
             'student_name' => $student_name,
             'scores' => 0,
             'time_joined' => $now->format("Y-m-d H:i:s"),
             'student_choices' => json_encode($question_copies),
-            'time_end' => $now->addMinutes($time_offline)->format("Y-m-d H:i:s")
+            'time_end' => $end->second(0)->format("Y-m-d H:i:s"),
+            'timestamp_out' => $end->second(0)->timestamp
         ]);
     }
 
