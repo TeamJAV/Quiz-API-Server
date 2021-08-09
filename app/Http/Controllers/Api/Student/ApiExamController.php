@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\Student;
 
 use App\Events\SubmitQuestionEvent;
 use App\Http\Controllers\Api\ApiBaseController;
+use App\Http\Resources\QuizCopyCollection;
+use App\Models\QuizCopy;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Location;
 
 class ApiExamController extends ApiBaseController
 {
@@ -20,6 +23,18 @@ class ApiExamController extends ApiBaseController
     {
         $this->resultDetailRepository = $resultDetailRepository;
         $this->resultTestRepository = $resultTestRepository;
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $current_room = self::currentRoom($request);
+        if (is_null($current_room)) {
+            return self::responseJSON(403, false, "Invalid request");
+        }
+        $result_test = $this->resultTestRepository->getResultTestOnline($current_room->id);
+        return self::responseJSON(200, true, "Content quiz", [
+            'quiz' => new QuizCopyCollection(QuizCopy::with("questionCopies")->find($result_test->quiz_copy_id)),
+        ]);
     }
 
     public function store(Request $request): JsonResponse
@@ -53,8 +68,10 @@ class ApiExamController extends ApiBaseController
         ]);
     }
 
-    public function ip(Request $request)
+    public function ip(): JsonResponse
     {
-        dd($this->getIp(), $_SERVER['REMOTE_ADDR']);
+        return self::responseJSON(200, true, "IP", [
+            "ip" => $ip = $this->getIp()
+        ]);
     }
 }

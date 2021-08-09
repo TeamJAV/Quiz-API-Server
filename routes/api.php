@@ -79,11 +79,12 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
 // For student
 Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Student'], function () {
     // Route user
-    Route::get('ip', 'ApiExamController@ip');
+    Route::get('ip', 'ApiExamController@ip')->name('api.client-api-student');
     Route::get('join-room/{id}', 'ApiRoomController@joinRoom')->name('api.room-join');
     Route::post('join-room', 'ApiRoomController@joinRoomByName')->name('api.room-join-by-name');
     Route::post('register', 'ApiRoomController@register')->name('api.room-register')->middleware('room-auth');
     Route::group(['middleware' => ['exam-auth']], function () {
+        Route::get('', 'ApiExamController@index')->name('api.content-quiz');
         Route::post('submit-answer', 'ApiExamController@store')->name('api.submit-answer');
         Route::post('result-test', 'ApiExamController@result')->name('api.result-test');
 

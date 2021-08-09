@@ -91,7 +91,7 @@ class ApiRoomController extends ApiBaseController
                     'rd_id' => encrypt($result_detail->id),
                 ],
                 'room' => new RoomCollection($current_room),
-                'quiz' => new QuizCopyCollection(QuizCopy::with("questionCopies")->find($result_test->quiz_copy_id)),
+//                'quiz' => new QuizCopyCollection(QuizCopy::with("questionCopies")->find($result_test->quiz_copy_id)),
             ])->cookie('rd_id', encrypt($result_detail->id));
     }
 }
