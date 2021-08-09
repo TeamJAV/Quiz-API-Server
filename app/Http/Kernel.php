@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'join-room' => \App\Http\Middleware\JoinRoomMiddleware::class,
         'room-auth' => \App\Http\Middleware\RoomAuthMiddlware::class,
+        'exam-auth' => \App\Http\Middleware\ExamMiddleware::class,
         'json.response' => \App\Http\Middleware\ForeJsonResponse::class,
         'cors' => \App\Http\Middleware\Cors::class
     ];

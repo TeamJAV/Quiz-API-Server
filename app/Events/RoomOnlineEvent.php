@@ -24,8 +24,9 @@ class RoomOnlineEvent implements ShouldBroadcast
     public $shuffle_question;
     public $shuffle_answer;
     public $time_end;
+    public $is_test;
 
-    public function __construct($room)
+    public function __construct($room, $is_test = false)
     {
         //
         $this->room_id = $room->id;
@@ -33,6 +34,7 @@ class RoomOnlineEvent implements ShouldBroadcast
         $this->shuffle_question = $room->shuffle_question != 0;
         $this->shuffle_answer = $room->shuffle_answer != 0;
         $this->time_end = $room->time_end;
+        $this->is_test = $is_test;
     }
 
     /**
@@ -42,7 +44,7 @@ class RoomOnlineEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('room.'.encrypt($this->room_id));
+        return new PrivateChannel('room.' . encrypt($this->room_id));
     }
 
 
@@ -53,15 +55,26 @@ class RoomOnlineEvent implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        return [
-            'message' => $this->online ? 'Room online, go to test' : 'Room offline, go to loading',
-            'room' => [
-                'id' => $this->room_id,
-            ],
-            'is_online' => $this->online,
-            'is_shuffle_question' => $this->shuffle_question,
-            'is_shuffle_answer' => $this->shuffle_answer,
-            'time_out' => $this->time_end
-        ];
+        if ($this->online) {
+            return [
+                'message' => 'Room online, go to test',
+                'room' => [
+                    'id' => $this->room_id,
+                ],
+                'is_online' => $this->online,
+                'is_shuffle_question' => $this->shuffle_question,
+                'is_shuffle_answer' => $this->shuffle_answer,
+                'time_out' => $this->time_end
+            ];
+        } else {
+            return [
+                'message' => 'Room offline, go to loading',
+                'room' => [
+                    'id' => $this->room_id,
+                ],
+                'is_online' => $this->online,
+                'is_test' => $this->is_test
+            ];
+        }
     }
 }

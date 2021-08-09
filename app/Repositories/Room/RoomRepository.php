@@ -24,15 +24,25 @@ class RoomRepository extends BaseRepository implements IRoomRepositoryInterface
         return $model->with("user")->where("user_id", $userId)->orderByRaw($orderBy . " " . $type)->paginate($this->perPage);
     }
 
-    public function getRoomByNamePaginate($userId, $name, $orderBy, $type, $trash)
+    public function getRoomByNamePaginate($userId, $name, $orderBy, $type, $trash, $paginate = true)
     {
         if (is_null($name)) {
             return $this->getRoomByUserPaginate($userId, $orderBy, $type, $trash);
         }
         $name = strtoupper($name);
         $model = is_null($trash) ? $this->model : $this->model->onlyTrashed();
-        return $model->with('user')->where("user_id", $userId)->where('name', 'like', "%" . $name . "%")
-            ->orderByRaw($orderBy . " " . $type)->paginate($this->perPage);
+        $data = $model->with('user')->where("user_id", $userId)->where('name', 'like', "%" . $name . "%")
+        ->orderByRaw($orderBy . " " . $type);
+        if  ($paginate) {
+            return $data->paginate($this->perPage);
+        }
+        return $data->get();
+    }
+
+    public function getRoomByName($name)
+    {
+        $name = strtoupper($name);
+        return $this->model->with("user")->where("name", "like", $name)->first();
     }
 
     public function setUpRoomOnline($id, $attributes = [])

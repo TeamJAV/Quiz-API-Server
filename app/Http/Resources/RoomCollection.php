@@ -20,7 +20,6 @@ class RoomCollection extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
-//            "user" => $this->user
             "status" => $this->status != 0 ? 'Online' : 'Offline',
             "shuffle_answer" => $this->shuffle_answer != 0,
             "shuffle_question" => $this->shuffle_question != 0,

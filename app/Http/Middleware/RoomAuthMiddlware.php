@@ -17,7 +17,7 @@ class RoomAuthMiddlware
     public function handle($request, Closure $next)
     {
         if (!$this->_check($request)) {
-            return response([
+            return response()->json([
                 'status' => 403,
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -28,9 +28,9 @@ class RoomAuthMiddlware
 
     private function _check($request)
     {
-        if (!$request->header('auth-room')) {
+        if (!$request->header('r_id')) {
             return false;
         }
-        return Room::find(decrypt($request->header('auth-room')));
+        return Room::find(decrypt($request->header('r_id')));
     }
 }

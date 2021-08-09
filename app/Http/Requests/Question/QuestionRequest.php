@@ -29,14 +29,20 @@ class QuestionRequest extends FormRequest
             'title' => 'required',
             'explain'=>'nullable',
             'choices'=>'required',
-            'correct_choice'=>'nullable'
+            'correct_choice'=>'nullable',
+//            'img'=>'nullable|mimes:jpeg,bmp,png',
+            'question_type'=>'required|in:multiple,true-false,short-answer'
         ];
     }
 
-    public function failedValidation(Validator $validator): \Illuminate\Http\JsonResponse
+    protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(
-            response()->json(['success' => false, 'status' => 400, 'error' => $validator->errors()->first()])
-        );
+        $response = [
+            'status' => 422,
+            'success' => false,
+            'message' => $validator->errors()->first(),
+            'data' => $validator->errors()
+        ];
+        throw new HttpResponseException(response()->json($response, 422));
     }
 }

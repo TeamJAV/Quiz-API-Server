@@ -29,7 +29,7 @@ class NewRoomRequest extends FormRequest
         return [
             //
             'id' => 'nullable',
-            'name' => 'required|min:1|max:25',
+            'name' => 'required|min:1|max:25|unique:rooms',
             'status' => 'nullable',
             'is_shuffle' => 'nullable'
         ];
@@ -41,14 +41,14 @@ class NewRoomRequest extends FormRequest
             if (Room::query()->where('user_id', auth()->id())->count() > 20) {
                 $validator->errors()->add('name', 'You have reached the maximum of rooms.');
             }
-            $room = auth()->user()->rooms()->where('name', $this->name)->first();
-            if ($this->id != null) {
-                if ($room && $room['id'] != $this->id) {
-                    $validator->errors()->add('name', 'The room name has already exists.');
-                }
-            } elseif ($room) {
-                $validator->errors()->add('name', 'The room name has already exists.');
-            }
+//            $room = auth()->user()->rooms()->where('name', $this->name)->first();
+//            if ($this->id != null) {
+//                if ($room && $room['id'] != $this->id) {
+//                    $validator->errors()->add('name', 'The room name has already exists.');
+//                }
+//            } elseif ($room) {
+//                $validator->errors()->add('name', 'The room name has already exists.');
+//            }
         });
     }
 
