@@ -33,7 +33,7 @@ class RoomOnlineEvent implements ShouldBroadcast
         $this->online = $room->status != 0;
         $this->shuffle_question = $room->shuffle_question != 0;
         $this->shuffle_answer = $room->shuffle_answer != 0;
-        $this->time_end = $room->time_end;
+        $this->time_end = $room->time_offline;
         $this->is_test = $is_test;
     }
 
