@@ -50,7 +50,7 @@ class RoomOnlineEvent implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'room.online.event';
+        return 'event-room-online';
     }
 
     public function broadcastWith(): array
