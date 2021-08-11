@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 class SubmitQuestionEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
     public $resultTest;
 
     /**
@@ -39,7 +40,7 @@ class SubmitQuestionEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('result-teacher.'.$this->resultTest->id);
+        return new PrivateChannel('result-teacher.' . $this->resultTest->id);
     }
 
     public function broadcastWith(): array

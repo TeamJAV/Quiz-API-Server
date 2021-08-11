@@ -39,7 +39,8 @@ class StudentFinishExamEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('student-finished-exam.' . $this->_timestamp);
+//        return new PrivateChannel('student-finished-exam.' . $this->_timestamp);
+        return new Channel('student-finished-exam.' . $this->_timestamp);
     }
 
     public function broadcastWith(): array

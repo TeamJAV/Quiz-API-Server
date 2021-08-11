@@ -85,7 +85,8 @@ class ApiRoomController extends ApiBaseController
         if (auth()->user()->cant('share', $room)) {
             return self::response403('This room is not belong to you');
         }
-        $link = route('api.room-join', encrypt($room->id));
+//        $link = route('api.room-join', encrypt($room->id));
+        $link = route('api.room-join', $room->id);
         return self::responseJSON(200, true, 'Link join room', ['link' => $link]);
     }
 

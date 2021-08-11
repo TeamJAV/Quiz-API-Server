@@ -20,7 +20,7 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 
 // Channel status of room
 Broadcast::channel('room.{id}', function ($id) {
-    return \App\Models\Room::find(decrypt($id))->exists();
+    return \App\Models\Room::query()->where("id", $id)->exists();
 });
 // Channel stop exam in group timestamp
 Broadcast::channel('student-finished-exam.{timestamp}', function ($timestamp) {

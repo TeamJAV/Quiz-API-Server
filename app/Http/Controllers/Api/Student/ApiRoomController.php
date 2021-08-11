@@ -10,7 +10,6 @@ use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
 use App\Repositories\Room\RoomRepository;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -36,16 +35,15 @@ class ApiRoomController extends ApiBaseController
 
     public function joinRoom(Request $request, $id): JsonResponse
     {
-        try {
-            $room = $this->roomRepository->find(decrypt($id));
-        } catch (DecryptException $e) {
-            return self::responseJSON(400, false, $e->getMessage());
-        }
+//            $room = $this->roomRepository->find(decrypt($id));
+        $room = $this->roomRepository->find($id);
         if (!$room) {
             return self::responseJSON(400, false, 'Not exist this room');
         }
         // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
+//        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
+//            ->cookie('r_id', $id);
+        return self::responseJSON(200, true, 'Join room success', ['r_id' => $room->id])
             ->cookie('r_id', $id);
 
     }
@@ -68,8 +66,10 @@ class ApiRoomController extends ApiBaseController
             return self::responseJSON(400, false, 'Room is not online');
         }
         // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
-            ->cookie('r_id', encrypt($room->id));
+//        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
+//            ->cookie('r_id', encrypt($room->id));
+        return self::responseJSON(200, true, 'Join room success', ['r_id' => $room->id])
+            ->cookie('r_id', $room->id);
     }
 
     public function register(Request $request): JsonResponse
@@ -89,16 +89,26 @@ class ApiRoomController extends ApiBaseController
         if ($current_room->status) {
             $result_test = $this->resultTestRepository->getResultTestOnline($current_room->id);
             $result_detail = $this->resultTestRepository->creatResultDetailForStudent($result_test->quiz_copy_id, $result_test, $request->input("name"), $current_room->time_offline);
+//            return self::responseJSON(200, true, 'Register success',
+//                [
+//                    'result_detail' => [
+//                        'name' => $request->get('name'),
+//                        'rd_id' => encrypt($result_detail->id),
+//                        'key_channel' => $result_detail->timestamp_out,
+//                        'time_end' => $result_detail->time_end
+//                    ],
+//                    'room' => new RoomCollection($current_room),
+//                ])->cookie('rd_id', encrypt($result_detail->id));
             return self::responseJSON(200, true, 'Register success',
                 [
                     'result_detail' => [
                         'name' => $request->get('name'),
-                        'rd_id' => encrypt($result_detail->id),
+                        'rd_id' => $result_detail->id,
                         'key_channel' => $result_detail->timestamp_out,
                         'time_end' => $result_detail->time_end
                     ],
                     'room' => new RoomCollection($current_room),
-                ])->cookie('rd_id', encrypt($result_detail->id));
+                ])->cookie('rd_id', $result_detail->id);
         } else {
             return self::responseJSON(400, false, 'Room is not online');
         }

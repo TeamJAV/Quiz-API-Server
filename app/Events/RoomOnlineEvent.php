@@ -44,7 +44,8 @@ class RoomOnlineEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('room.' . encrypt($this->room_id));
+//        return new PrivateChannel('room.' . encrypt($this->room_id));
+        return new Channel('room.' . $this->room_id);
     }
 
 

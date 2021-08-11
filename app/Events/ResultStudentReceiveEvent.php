@@ -34,7 +34,8 @@ class ResultStudentReceiveEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('result-detail.' . encrypt($this->result_detail->id));
+//        return new PrivateChannel('result-detail.' . $this->result_detail->id);
+        return new Channel('result-detail.' . $this->result_detail->id);
     }
 
     public function broadcastAs(): string

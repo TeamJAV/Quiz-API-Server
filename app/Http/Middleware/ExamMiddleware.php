@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Models\ResultDetail;
 use Closure;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -27,9 +26,10 @@ class ExamMiddleware
             ]);
         }
         try {
-            $result_detail_id = decrypt($request->header('rd_id'));
+//            $result_detail_id = decrypt($request->header('rd_id'));
+            $result_detail_id = $request->header('rd_id');
             $result_detail = ResultDetail::find($result_detail_id);
-            if (Carbon::now()->second(0)->gt(Carbon::parse($result_detail->time_end)) && $result_detail->is_finished == 0){
+            if (Carbon::now()->gt(Carbon::parse($result_detail->time_end)) && $result_detail->is_finished == 0) {
                 return response()->json([
                     'status' => 400,
                     'success' => false,
@@ -44,7 +44,7 @@ class ExamMiddleware
                 ], 400);
             }
             return $next($request);
-        } catch (DecryptException $exception) {
+        } catch (\Exception $exception) {
             return response()->json([
                 'status' => 400,
                 'success' => false,

@@ -4,7 +4,6 @@ namespace App\Broadcasting;
 
 use App\Models\ResultDetail;
 use App\User;
-use Illuminate\Contracts\Encryption\DecryptException;
 
 class ResultDetailChannel
 {
@@ -28,11 +27,12 @@ class ResultDetailChannel
     public function join(User $user, $id)
     {
         //
-        try {
-            $id = decrypt($id);
-            return ResultDetail::findOrFail($id) == 1;
-        } catch (DecryptException $e) {
-            return false;
-        }
+//        try {
+//            $id = decrypt($id);
+//            return ResultDetail::findOrFail($id) == 1;
+//        } catch (DecryptException $e) {
+//            return false;
+//        }
+        return ResultDetail::query()->where("id", $id)->exists();
     }
 }

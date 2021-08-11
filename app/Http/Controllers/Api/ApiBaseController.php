@@ -21,7 +21,8 @@ class ApiBaseController extends Controller
 
     protected static function currentRoom(Request $request)
     {
-        $id = decrypt($request->header('r_id'));
+//        $id = decrypt($request->header('r_id'));
+        $id = $request->header('r_id');
         $room = Room::find($id);
         if (!$room) {
             return null;
@@ -31,7 +32,8 @@ class ApiBaseController extends Controller
 
     protected static function currentResultDetail(Request $request)
     {
-        $id = decrypt($request->header('rd_id'));
+//        $id = decrypt($request->header('rd_id'));
+        $id = $request->header('rd_id');
         $result_detail = ResultDetail::find($id);
         if (!$result_detail) {
             return null;
@@ -52,7 +54,6 @@ class ApiBaseController extends Controller
             }
         }
         return request()->ip(); // it will return server ip when no client ip found
-
     }
 
 }
