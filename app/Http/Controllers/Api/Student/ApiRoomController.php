@@ -62,7 +62,7 @@ class ApiRoomController extends ApiBaseController
         if (!$room) {
             return self::responseJSON(400, false, 'Not exist this room');
         }
-        if ($room->status) {
+        if (!$room->status) {
             return self::responseJSON(400, false, 'Room is not online');
         }
         // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
