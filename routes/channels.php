@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -19,8 +20,17 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 
 // Channel status of room
 Broadcast::channel('room.{id}', function ($id) {
-    return \App\Models\Room::where('id', decrypt($id))->exists();
+    return \App\Models\Room::query()->where("id", $id)->exists();
+});
+// Channel stop exam in group timestamp
+Broadcast::channel('student-finished-exam.{timestamp}', function ($timestamp) {
+    try {
+        Carbon::createFromTimestamp($timestamp);
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
 });
 
 // Channel result for student when cronjob run
-Broadcast::channel("result_detail.{id}", \App\Broadcasting\ResultDetailChannel::class);
+Broadcast::channel("result-detail.{id}", \App\Broadcasting\ResultDetailChannel::class);

@@ -26,11 +26,11 @@ class RoomAuthMiddlware
         return $next($request);
     }
 
-    private function _check($request)
+    private function _check($request): bool
     {
         if (!$request->header('r_id')) {
             return false;
         }
-        return Room::find(decrypt($request->header('r_id')));
+        return Room::query()->where("id", $request->header('r_id'))->exists();
     }
 }

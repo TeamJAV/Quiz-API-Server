@@ -13,30 +13,28 @@ class ApiBaseController extends Controller
     const MULTIPLE = 'multiple';
     const SHORT_ANSWER = 'short-answer';
     const TRUE_FALSE = 'true-false';
+    const HELL_ID = 999;
 
     protected static function response403($message = 'This action is forbidden'): \Illuminate\Http\JsonResponse
     {
         return self::responseJSON(403, false, $message);
     }
 
+    protected static function response404($message = 'Not found'): \Illuminate\Http\JsonResponse
+    {
+        return self::responseJSON(404, false, $message);
+    }
+
     protected static function currentRoom(Request $request)
     {
-        $id = decrypt($request->header('r_id'));
-        $room = Room::find($id);
-        if (!$room) {
-            return null;
-        }
-        return $room;
+        $id = $request->header('r_id') ? $request->header('r_id') : null;
+        return Room::find($id);
     }
 
     protected static function currentResultDetail(Request $request)
     {
-        $id = decrypt($request->header('rd_id'));
-        $result_detail = ResultDetail::find($id);
-        if (!$result_detail) {
-            return null;
-        }
-        return $result_detail;
+        $id = $request->header('rd_id') ? $request->header('rd_id') : null;
+        return ResultDetail::find($id);
     }
 
     public function getIp(): ?string
@@ -52,7 +50,6 @@ class ApiBaseController extends Controller
             }
         }
         return request()->ip(); // it will return server ip when no client ip found
-
     }
 
 }

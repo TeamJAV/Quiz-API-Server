@@ -6,6 +6,7 @@ namespace App\Repositories\ResultDetail;
 
 use App\Repositories\BaseRepository;
 use App\Repositories\QuestionCopy\QuestionCopyRepository;
+use Illuminate\Support\Carbon;
 
 class ResultDetailRepository extends BaseRepository implements IResultDetailRepositoryInterface
 {
@@ -21,6 +22,29 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
     {
         // TODO: Implement getModel() method.
         return \App\Models\ResultDetail::class;
+    }
+
+    public function getStudentWaitFromRoom(int $room_pending_id)
+    {
+        return $this->model->where("room_pending_id", $room_pending_id)->first();
+    }
+
+    public function updateStudentWaiting($room_pending_id, $default_choices, $result_test, $time_offline)
+    {
+        $end = $time_offline != null
+            ? Carbon::now()->addMinutes($time_offline)->setSecond(0)
+            : null;
+        $this->model
+            ->where("room_pending_id", $room_pending_id)
+            ->whereNull("student_choices")
+            ->update([
+                'student_choices' => $default_choices,
+                'result_id' => $result_test->id,
+                'time_joined' => Carbon::now()->format("Y-m-d H:i:s"),
+                'time_end' => $end != null ? $end->format("Y-m-d H:i:s") : null,
+                'timestamp_out' => $end != null ? $end->timestamp : null,
+                'room_pending_id' => null
+            ]);
     }
 
     public function solveResult($result_detail, $answer, $quiz_copy_id)

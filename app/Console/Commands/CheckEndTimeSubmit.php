@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Events\ResultStudentReceiveEvent;
 use App\Events\RoomOnlineEvent;
+use App\Events\StudentFinishExamEvent;
 use App\Models\ResultDetail;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -40,21 +41,21 @@ class CheckEndTimeSubmit extends Command
      */
     public function handle()
     {
-        $now = Carbon::now()->format("Y-m-d H:i");
+        $now = Carbon::now()->second(0)->timestamp;
         $result_details = ResultDetail::query()
             ->where("is_finished", 0)
-            ->whereRaw("DATE_FORMAT(time_end, '%Y-%m-%d\ %H:%i') = ?", $now)
+            ->where("timestamp_out", $now)
             ->get();
         if ($result_details->count() == 0) {
-            $this->info("$now No student");
+            $this->info(Carbon::now()->format("Y-m-d H:i") . " - $now : no student");
         } else {
             try {
-                foreach ($result_details as $result_detail) {
+                $result_details->each(function ($result_detail) use ($now) {
                     $result_detail->is_finished = 1;
                     $result_detail->save();
-                    event(new ResultStudentReceiveEvent($result_detail));
-                    $this->info("Student $result_detail->student_name stop exam");
-                }
+                    $this->info(Carbon::now()->format("Y-m-d H:i") . " - $now : student $result_detail->student_name stop exam");
+                });
+                event(new StudentFinishExamEvent($now));
             } catch (\Exception $exception) {
                 $error = $exception->getMessage();
                 $this->info("Error: $error");
