@@ -31,7 +31,6 @@ class RoomAuthMiddlware
         if (!$request->header('r_id')) {
             return false;
         }
-//        return Room::find(decrypt($request->header('r_id')));
         return Room::query()->where("id", $request->header('r_id'))->exists();
     }
 }

@@ -13,6 +13,7 @@ use App\Repositories\Question\QuestionRepository;
 use App\Repositories\QuestionCopy\QuestionCopyRepository;
 use App\Repositories\Quiz\QuizRepository;
 use App\Repositories\QuizCopy\QuizCopyRepository;
+use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
 use App\Repositories\Room\RoomRepository;
 use App\Repositories\User\UserRepository;
@@ -27,17 +28,25 @@ class ApiRoomController extends ApiBaseController
     private $roomRepository;
     private $userRepository;
     private $resultTestRepository;
+    private $resultDetailRepository;
     private $quizRepository;
     private $quizCopyRepository;
     private $questionRepository;
     private $questionCopyRepository;
 
-    public function __construct(RoomRepository $roomRepository, UserRepository $userRepository, ResultTestRepository $resultTestRepository,
-                                QuizRepository $quizRepository, QuizCopyRepository $quizCopyRepository, QuestionRepository $questionRepository, QuestionCopyRepository $questionCopyRepository)
+    public function __construct(RoomRepository $roomRepository,
+                                UserRepository $userRepository,
+                                ResultTestRepository $resultTestRepository,
+                                ResultDetailRepository $resultDetailRepository,
+                                QuizRepository $quizRepository,
+                                QuizCopyRepository $quizCopyRepository,
+                                QuestionRepository $questionRepository,
+                                QuestionCopyRepository $questionCopyRepository)
     {
         $this->roomRepository = $roomRepository;
         $this->userRepository = $userRepository;
         $this->resultTestRepository = $resultTestRepository;
+        $this->resultDetailRepository = $resultDetailRepository;
         $this->quizRepository = $quizRepository;
         $this->quizCopyRepository = $quizCopyRepository;
         $this->questionRepository = $questionRepository;
@@ -80,12 +89,11 @@ class ApiRoomController extends ApiBaseController
     public function share(Room $room): JsonResponse
     {
         if (!$room) {
-            return self::responseJSON(400, false, 'Not exist this room');
+            return self::response404('Not found this room');
         }
         if (auth()->user()->cant('share', $room)) {
-            return self::response403('This room is not belong to you');
+            return self::response403();
         }
-//        $link = route('api.room-join', encrypt($room->id));
         $link = route('api.room-join', $room->id);
         return self::responseJSON(200, true, 'Link join room', ['link' => $link]);
     }
@@ -100,9 +108,11 @@ class ApiRoomController extends ApiBaseController
         } catch (AuthorizationException $e) {
             return self::response403($e->getMessage());
         }
+        // If room is being online now then must stop
         if ($room->status == 1) {
             return self::responseJSON(422, false, 'You must stop this room before launch again');
         }
+
         $shuffle_answer = $request->get('shuffle_answer') == true ? 1 : 0;
         $shuffle_question = $request->get('shuffle_question') == true ? 1 : 0;
         $time_offline = $request->filled('time_offline') ? $request->get('time_offline') : null;
@@ -114,22 +124,28 @@ class ApiRoomController extends ApiBaseController
                 'status' => 1,
                 'time_offline' => $time_offline
             ]);
-            //Insert new quiz_copy
+
+            //Insert from quiz to quiz_copy
             $quiz_copy = $quiz->quizCopies()->create(['title' => $quiz->title]);
-            //Insert new data to question_copy
+
+            //Insert from question to question_copy
             $questions = $this->questionRepository->getAllQuestionsByQuizId($quiz->id);
             $check_quiz_copy = $this->quizCopyRepository->createQuestionCopy($quiz_copy, $questions);
-            if ($check_quiz_copy) {
-                //Create a new result test
-                $result_test = $quiz_copy->resultTests()->create([
-                    'status' => 1,
-                    'date_create' => Carbon::now()->toDateTimeString(),
-                    'room_id' => $room->id,
-                    'user_id' => $room->user_id,
-                ]);
-            } else {
+
+            if (!$check_quiz_copy) {
                 return self::responseJSON(500, false, "Can't create question copy'");
             }
+            //Create a new result test
+            $result_test = $quiz_copy->resultTests()->create([
+                'status' => 1,
+                'date_create' => Carbon::now()->toDateTimeString(),
+                'room_id' => $room->id,
+                'user_id' => $room->user_id,
+            ]);
+            // Check has student wait room
+            $questions = $this->resultTestRepository->generateQuestion($quiz_copy->id);
+            $this->resultDetailRepository->updateStudentWaiting(
+                $room->id, $questions, $result_test, $room->time_offline);
         } catch (\Exception $e) {
             return self::responseJSON(500, false, $e->getMessage());
         }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\QuizCopyCollection;
 use App\Http\Resources\RoomCollection;
 use App\Models\QuizCopy;
+use App\Models\ResultDetail;
 use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
@@ -35,14 +36,10 @@ class ApiRoomController extends ApiBaseController
 
     public function joinRoom(Request $request, $id): JsonResponse
     {
-//            $room = $this->roomRepository->find(decrypt($id));
         $room = $this->roomRepository->find($id);
         if (!$room) {
-            return self::responseJSON(400, false, 'Not exist this room');
+            return self::response404('Not found this room');
         }
-        // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-//        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
-//            ->cookie('r_id', $id);
         return self::responseJSON(200, true, 'Join room success', ['r_id' => $room->id])
             ->cookie('r_id', $id);
 
@@ -60,14 +57,12 @@ class ApiRoomController extends ApiBaseController
         }
         $room = $this->roomRepository->getRoomByName($request->input('name'));
         if (!$room) {
-            return self::responseJSON(400, false, 'Not exist this room');
+            return self::response404('Not found this room');
         }
         if (!$room->status) {
-            return self::responseJSON(400, false, 'Room is not online');
+            return self::responseJSON(200, true, 'Join success, waiting the room online', ['r_id' => $room->id])
+                ->cookie('r_id', $room->id);
         }
-        // Trả về r_id là id mã hóa của phòng thi, lưu ở cookie hoặc local storage để lần sau gửi lên cùng với headers
-//        return self::responseJSON(200, true, 'Join room success', ['r_id' => encrypt($room->id)])
-//            ->cookie('r_id', encrypt($room->id));
         return self::responseJSON(200, true, 'Join room success', ['r_id' => $room->id])
             ->cookie('r_id', $room->id);
     }
@@ -82,35 +77,34 @@ class ApiRoomController extends ApiBaseController
             'name.max' => 'Your name must be at most 100 characters',
         ]);
         if ($validator->fails()) {
-            return self::responseJSON(422, false, $validator->errors()->first(), ['errors' => $validator->errors()]);
+            return self::responseJSON(422, false, $validator->errors()->first());
         }
         $current_room = self::currentRoom($request);
-        // if room is online
-        if ($current_room->status) {
-            $result_test = $this->resultTestRepository->getResultTestOnline($current_room->id);
-            $result_detail = $this->resultTestRepository->creatResultDetailForStudent($result_test->quiz_copy_id, $result_test, $request->input("name"), $current_room->time_offline);
-//            return self::responseJSON(200, true, 'Register success',
-//                [
-//                    'result_detail' => [
-//                        'name' => $request->get('name'),
-//                        'rd_id' => encrypt($result_detail->id),
-//                        'key_channel' => $result_detail->timestamp_out,
-//                        'time_end' => $result_detail->time_end
-//                    ],
-//                    'room' => new RoomCollection($current_room),
-//                ])->cookie('rd_id', encrypt($result_detail->id));
-            return self::responseJSON(200, true, 'Register success',
-                [
-                    'result_detail' => [
-                        'name' => $request->get('name'),
-                        'rd_id' => $result_detail->id,
-                        'key_channel' => $result_detail->timestamp_out,
-                        'time_end' => $result_detail->time_end
-                    ],
-                    'room' => new RoomCollection($current_room),
-                ])->cookie('rd_id', $result_detail->id);
+        $result_test = $this->resultTestRepository->getResultTestOnline($current_room->id);
+        // If result_test null means room offline else room online
+        if ($result_test == null) {
+            $result_detail = $this->resultDetailRepository->create([
+                'student_name' => $request->get('name'),
+                'scores' => 0,
+                'result_id' => self::HELL_ID,
+                'room_pending_id' => $current_room->id
+            ]);
+            $mess = "Submit success, please waiting room online";
         } else {
-            return self::responseJSON(400, false, 'Room is not online');
+            $result_detail = $this->resultTestRepository->creatResultDetailForStudent(
+                $result_test->quiz_copy_id, $result_test, $request->input("name"), $current_room->time_offline);
+            $mess = "Submit success";
         }
+
+        return self::responseJSON(200, true, $mess,
+            [
+                'result_detail' => [
+                    'name' => $result_detail->student_name,
+                    'rd_id' => $result_detail->id,
+                    'key_channel' => $result_detail->timestamp_out,
+                    'time_end' => $result_detail->time_end
+                ],
+                'room' => new RoomCollection($current_room),
+            ])->cookie('rd_id', $result_detail->id);
     }
 }

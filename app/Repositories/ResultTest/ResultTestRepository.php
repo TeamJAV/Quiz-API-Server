@@ -29,7 +29,7 @@ class ResultTestRepository extends BaseRepository implements IResultTestReposito
         return $this->model->where("status", 1)->where("room_id", $id)->first();
     }
 
-    public function creatResultDetailForStudent($quiz_copy_id, $result_test, $student_name, $time_offline)
+    public function generateQuestion($quiz_copy_id)
     {
         $question_copies = $this->questionCopyRepository->getAllQuestionCopyByQuizIdJsonDecode($quiz_copy_id);
         $question_copies->transform(function ($item, $index) {
@@ -41,15 +41,21 @@ class ResultTestRepository extends BaseRepository implements IResultTestReposito
                 ]
             ];
         });
-        $now = Carbon::now();
-        $end = $now->addMinutes($time_offline);
+        return json_encode($question_copies);
+    }
+
+    public function creatResultDetailForStudent($quiz_copy_id, $result_test, $student_name, $time_offline)
+    {
+        $end = $time_offline != null
+            ? Carbon::now()->addMinutes($time_offline)->seconds(0)
+            : null;
         return $result_test->resultDetails()->create([
             'student_name' => $student_name,
             'scores' => 0,
-            'time_joined' => $now->format("Y-m-d H:i:s"),
-            'student_choices' => json_encode($question_copies),
-            'time_end' => $end->second(0)->format("Y-m-d H:i:s"),
-            'timestamp_out' => $end->second(0)->timestamp
+            'time_joined' => Carbon::now()->format("Y-m-d H:i:s"),
+            'student_choices' => $this->generateQuestion($quiz_copy_id),
+            'time_end' => $end == null ? $end : $end->format("Y-m-d H:i:s"),
+            'timestamp_out' => $end == null ? $end : $end->timestamp
         ]);
     }
 

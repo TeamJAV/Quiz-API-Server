@@ -17,7 +17,7 @@ class QuizCopyRepository extends BaseRepository implements IQuizCopyRepositoryIn
 
     public function createQuestionCopy($quiz_copy, $collections): bool
     {
-//        try {
+        try {
             $collections->each(function ($item, $index) use ($quiz_copy) {
                 $quiz_copy->questionCopies()->create([
                     'title' => $item->title,
@@ -29,9 +29,9 @@ class QuizCopyRepository extends BaseRepository implements IQuizCopyRepositoryIn
                 ]);
             });
             return true;
-//        } catch (\Exception $e) {
-//            return false;
-//        }
+        } catch (\Exception $e) {
+            return false;
+        }
 
     }
 }
