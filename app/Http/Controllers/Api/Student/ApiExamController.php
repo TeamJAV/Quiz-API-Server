@@ -71,7 +71,7 @@ class ApiExamController extends ApiBaseController
                 $result_detail->is_finished = 1;
                 $result_detail->save();
                 return self::responseJSON(200, true, "Your exam is finished", [
-                    "link_result" => route("api.result-test")
+                    "link_result" => route("api.result-test", $result_detail->id)
                 ]);
             }
             return self::responseJSON(201, true);
