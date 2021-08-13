@@ -79,13 +79,17 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
             }
             return $correct;
         };
-        $count_true = 0;
+        $count_true = $result_detail->scores;
+        $number_question = count($student_choices);
         foreach ($student_choices as $index => &$item) {
             if (isset($item->$question_id)) {
                 $content = $item->$question_id;
                 $content->choices = $answer['choices'];
                 $content->correct = $is_correct();
-                if ($content->correct) $count_true += 1;
+                if ($count_true <= $number_question) {
+                    if ($content->correct) $count_true += 1;
+                    if (!$content->correct && $count_true > 0) $count_true -= 1;
+                }
             }
         }
         $result_detail->scores = $count_true;
