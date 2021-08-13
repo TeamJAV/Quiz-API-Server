@@ -79,17 +79,18 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
             }
             return $correct;
         };
-        $count_true = $result_detail->scores;
-        $number_question = count($student_choices);
+        $count_true = 0;
         foreach ($student_choices as $index => &$item) {
-            if (isset($item->$question_id)) {
-                $content = $item->$question_id;
-                $content->choices = $answer['choices'];
-                $content->correct = $is_correct();
-                if ($count_true <= $number_question) {
-                    if ($content->correct) $count_true += 1;
-                    if (!$content->correct && $count_true > 0) $count_true -= 1;
+            $id = (int)key($item);
+            $content = $item->$id;
+            if ($content) {
+                if ($id == $question_id) {
+                    $content->choices = $answer['choices'];
+                    $content->correct = $is_correct();
                 }
+                if ($content->correct) $count_true += 1;
+            } else {
+                $count_true = $result_detail->scores;
             }
         }
         $result_detail->scores = $count_true;
@@ -110,9 +111,9 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
     private function _clearString($string)
     {
         $string = trim($string);
-        $string = preg_replace("/\s+/", " ", $string);
-        $string = preg_replace("/\t+/", " ", $string);
-        $string = preg_replace("/\n\r+/", " ", $string);
+        $string = preg_replace("/\s+/", "", $string);
+        $string = preg_replace("/\t+/", "", $string);
+        $string = preg_replace("/\n\r+/", "", $string);
         return $string;
     }
 }
