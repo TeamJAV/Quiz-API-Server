@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\QuizCopyCollectionLive;
 use App\Http\Resources\ResultCollectionLive;
 use App\Http\Resources\RoomCollection;
+use App\Models\QuestionCopy;
 use App\Models\QuizCopy;
 use App\Models\Room;
 use App\Repositories\QuizCopy\QuizCopyRepository;
@@ -44,11 +45,27 @@ class ApiResultLiveController extends ApiBaseController
         if (!$result_test)
             return self::response404("Not found result test");
         $quiz = QuizCopy::find($result_test->quiz_copy_id);
+        $result_live = $result_test->resultDetails()->get();
         return self::responseJSON(200, true, "Dataset", [
             'key_channel' => $result_test->id,
             'room' => new RoomCollection($room),
             'quiz' => new QuizCopyCollectionLive($quiz),
-            'result_live' => new ResultCollectionLive($result_test)
+            'result_live' => $result_live->transform(function ($record) {
+                $record->student_choices = json_decode($record->student_choices, true);
+                $record->student_choices = array_map(function ($r) {
+                    $id = array_key_first($r);
+                    $r["question_id"] = $id;
+                    $r["student_choice"] = $r[$id];
+                    unset($r[$id]);
+                    return $r;
+                }, $record->student_choices);
+                unset($record["result_id"]);
+                unset($record["deleted_at"]);
+                unset($record["created_at"]);
+                unset($record["updated_at"]);
+                unset($record["room_pending_id"]);
+                return $record;
+            })->toArray()
         ]);
     }
 }
