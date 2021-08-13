@@ -87,6 +87,7 @@ Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', '
         Route::get('', 'ApiExamController@index')->name('api.content-quiz');
         Route::get('info', 'ApiExamController@infoStudent')->name('api.info-student');
         Route::post('submit-answer', 'ApiExamController@store')->name('api.submit-answer');
+        Route::post('finished', 'ApiExamController@finishedExam')->name('api.finished-exam');
     });
     Route::post('result-test/{id}', 'ApiExamController@result')->name('api.result-test');
 });

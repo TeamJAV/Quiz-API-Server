@@ -80,6 +80,21 @@ class ApiExamController extends ApiBaseController
         }
     }
 
+    public function finishedExam(Request $request): JsonResponse
+    {
+        $result_detail = $this->currentResultDetail($request);
+        if (is_null($result_detail)) {
+            return self::response403();
+        }
+        if ($result_detail->is_finished != 1) {
+            $result_detail->is_finished = 1;
+            $result_detail->save();
+            return self::responseJSON(200, true, "Your exam is finished", [
+                "link_result" => route("api.result-test", $result_detail->id)
+            ]);
+        }
+    }
+
     public function result(Request $request, $id): JsonResponse
     {
         $result_detail = $this->resultDetailRepository->find($id);
