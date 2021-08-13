@@ -17,6 +17,7 @@ class QuestionCopyCollectionShort extends JsonResource
         return [
             'id' => $this->id,
 //            'title' => $this->title,
+            'question_type' => $this->question_type
         ];
     }
 }
