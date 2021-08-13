@@ -33,10 +33,10 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
     {
         $q = $this->model->where("student_name", $student_name)->where("is_finished", 0);
         if ($room_pending_id != null && $result_id == null) {
-            return $q->where('result_id', $result_id)->exists();
+            return $q->where("room_pending_id", $room_pending_id)->exists();
         }
         if ($room_pending_id == null && $result_id != null) {
-            return $q->where("room_pending_id", $room_pending_id)->exists();
+            return $q->where('result_id', $result_id)->exists();
         }
         return null;
     }
