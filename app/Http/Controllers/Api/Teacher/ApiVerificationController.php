@@ -11,13 +11,14 @@ class ApiVerificationController extends ApiBaseController
 {
     //
     private $user_repository;
+    const PORT_REACT = "127.0.0.1:3000/login/teacher";
 
     public function __construct(UserRepository $user_repository)
     {
         $this->user_repository = $user_repository;
     }
 
-    public function verify(Request $request, $id): \Illuminate\Http\JsonResponse
+    public function verify(Request $request, $id)
     {
         if (!$request->hasValidSignature()) {
             return self::responseJSON(401, false, 'Invalid/Expired email url provided.');
@@ -26,7 +27,7 @@ class ApiVerificationController extends ApiBaseController
         if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
-        return response()->json('Verify success.', 200);
+        return redirect(self::PORT_REACT);
     }
 
     public function resend(Request $request): \Illuminate\Http\JsonResponse
