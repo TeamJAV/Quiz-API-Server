@@ -40,7 +40,8 @@ class SubmitQuestionEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('result-teacher.' . $this->resultTest->id);
+//        return new PrivateChannel('result-teacher.' . $this->resultTest->id);
+        return new Channel('result-teacher.' . $this->resultTest->id);
     }
 
     public function broadcastWith(): array
