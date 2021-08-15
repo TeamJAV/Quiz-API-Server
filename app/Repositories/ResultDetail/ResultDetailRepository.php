@@ -29,16 +29,16 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
         return $this->model->where("room_pending_id", $room_pending_id)->first();
     }
 
-    public function existsDuplicateStudentName($student_name, $result_id, $room_pending_id)
+    public function existsDuplicateStudentName($student_name, $result_id, $room_pending_id): bool
     {
-        $q = $this->model->where("student_name", $student_name)->where("is_finished", 0);
+        $q = $this->model->where("student_name", $student_name);
         if ($room_pending_id != null && $result_id == null) {
             return $q->where("room_pending_id", $room_pending_id)->exists();
         }
         if ($room_pending_id == null && $result_id != null) {
             return $q->where('result_id', $result_id)->exists();
         }
-        return null;
+        return false;
     }
 
     public function updateStudentWaiting($room_pending_id, $default_choices, $result_test, $time_offline)
@@ -115,5 +115,24 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
         $string = preg_replace("/\t+/", "", $string);
         $string = preg_replace("/\n\r+/", "", $string);
         return $string;
+    }
+
+    public function formatResultDetail($result_details)
+    {
+        return $result_details->transform(function ($record) {
+            $record->student_choices = json_decode($record->student_choices, true);
+            $record->student_choices = array_map(function ($r) {
+                $id = array_key_first($r);
+                $r["question_id"] = $id;
+                $r["student_choice"] = $r[$id];
+                unset($r[$id]);
+                return $r;
+            }, $record->student_choices);
+            unset($record["deleted_at"]);
+            unset($record["created_at"]);
+            unset($record["updated_at"]);
+            unset($record["room_pending_id"]);
+            return $record;
+        })->toArray();
     }
 }

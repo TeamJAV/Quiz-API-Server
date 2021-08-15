@@ -11,7 +11,7 @@ class ApiVerificationController extends ApiBaseController
 {
     //
     private $user_repository;
-    const PORT_REACT = "127.0.0.1:3000/login/teacher";
+    const REACT_ROUTE = "http://127.0.0.1:3000/login/teacher";
 
     public function __construct(UserRepository $user_repository)
     {
@@ -27,7 +27,7 @@ class ApiVerificationController extends ApiBaseController
         if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
-        return redirect(self::PORT_REACT);
+        return redirect()->to(self::REACT_ROUTE);
     }
 
     public function resend(Request $request): \Illuminate\Http\JsonResponse
