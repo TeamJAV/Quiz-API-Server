@@ -10,6 +10,7 @@ class QuestionCopy extends Model
     //
     use SoftDeletes;
     protected $fillable = [
+        'id',
         "title", "explain", "choices", "correct_choices", "question_type", "quiz_copy_id", "img"
     ];
     public function quizCopy(): \Illuminate\Database\Eloquent\Relations\BelongsTo

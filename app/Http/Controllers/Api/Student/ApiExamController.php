@@ -80,6 +80,21 @@ class ApiExamController extends ApiBaseController
         }
     }
 
+    public function finishedExam(Request $request): JsonResponse
+    {
+        $result_detail = $this->currentResultDetail($request);
+        if (is_null($result_detail)) {
+            return self::response403();
+        }
+        if ($result_detail->is_finished != 1) {
+            $result_detail->is_finished = 1;
+            $result_detail->save();
+            return self::responseJSON(200, true, "Your exam is finished", [
+                "link_result" => route("api.result-test", $result_detail->id)
+            ]);
+        }
+    }
+
     public function result(Request $request, $id): JsonResponse
     {
         $result_detail = $this->resultDetailRepository->find($id);
@@ -97,9 +112,8 @@ class ApiExamController extends ApiBaseController
                 'student_choices' => json_decode($result_detail->student_choices),
                 'scores' => $result_detail->scores,
                 'time_joined' => $result_detail->time_joined,
-                'time_end' => $result_detail->time_end,
+                'time_end' => Carbon::parse($result_detail->updated_at)->format('Y-m-d H:i:s'),
                 'time_do_seconds' => $last_time->diffInSeconds(Carbon::parse($result_detail->time_joined)),
-//            'result_test_id' => $result_detail->result_id,
             ]);
     }
 

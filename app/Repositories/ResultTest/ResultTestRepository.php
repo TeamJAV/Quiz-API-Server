@@ -29,6 +29,11 @@ class ResultTestRepository extends BaseRepository implements IResultTestReposito
         return $this->model->where("status", 1)->where("room_id", $id)->first();
     }
 
+    public function getResultTestOnlineWithQuiz($id)
+    {
+        return $this->model->with("quizCopy")->where("status", 1)->where("room_id", $id)->first();
+    }
+
     public function generateQuestion($quiz_copy_id)
     {
         $question_copies = $this->questionCopyRepository->getAllQuestionCopyByQuizIdJsonDecode($quiz_copy_id);

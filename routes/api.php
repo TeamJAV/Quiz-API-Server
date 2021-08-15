@@ -25,8 +25,8 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     //API Result
     Route::group(['prefix' => 'result', 'middleware' => ['auth:api', 'verified']], function () {
         Route::get('all_result', 'ResultController@allHistoryTest')->name('api.all-result');
-        Route::get('detail_result/{id}', 'ResultController@detailHistory')->name('api.detail-result');
-        Route::get('detail_result/{result_id}/question/{question_copy_id?}', 'ResultController@getQuestionResultDetail')->name('api.question-result');
+        Route::get('detail_result/{result_test}', 'ResultController@detailHistory')->name('api.detail-result');
+        Route::get('detail_result/{result}/question/{question}', 'ResultController@getQuestionResultDetail')->name('api.question-result');
     });
 
     // API quiz
@@ -60,7 +60,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
         });
     });
 
-    // For student
+    // For teacher
     Route::group(['middleware' => ['auth:api', 'verified']], function () {
         //Route Room
         Route::group(['prefix' => 'room'], function () {
@@ -73,12 +73,16 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
             Route::post('{room}/delete', 'ApiRoomController@delete')->name('api.room-delete');
             Route::post('{room}/restore', 'ApiRoomController@restore')->name('api.room-restore');
         });
+        // Route result
+        Route::group(['prefix' => 'result-live'], function () {
+            Route::get('{room}', 'ApiResultLiveController@getResultRoom')->name('api.result-live');
+        });
     });
 
 });
+
 // For student
 Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', 'api'], 'namespace' => 'Api\Student'], function () {
-    // Route user
     Route::get('ip', 'ApiExamController@ip')->name('api.client-api-student');
     Route::get('join-room/{id}', 'ApiRoomController@joinRoom')->name('api.room-join');
     Route::post('join-room', 'ApiRoomController@joinRoomByName')->name('api.room-join-by-name');
@@ -87,6 +91,7 @@ Route::group(['prefix' => 'student', 'middleware' => ['cors', 'json.response', '
         Route::get('', 'ApiExamController@index')->name('api.content-quiz');
         Route::get('info', 'ApiExamController@infoStudent')->name('api.info-student');
         Route::post('submit-answer', 'ApiExamController@store')->name('api.submit-answer');
+        Route::post('finished', 'ApiExamController@finishedExam')->name('api.finished-exam');
     });
     Route::post('result-test/{id}', 'ApiExamController@result')->name('api.result-test');
 });

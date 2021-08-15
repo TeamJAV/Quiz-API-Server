@@ -7,6 +7,7 @@ use App\Http\Resources\QuizCopyCollection;
 use App\Http\Resources\RoomCollection;
 use App\Models\QuizCopy;
 use App\Models\ResultDetail;
+use App\Models\Room;
 use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use App\Repositories\ResultTest\ResultTestRepository;
@@ -83,6 +84,9 @@ class ApiRoomController extends ApiBaseController
         $result_test = $this->resultTestRepository->getResultTestOnline($current_room->id);
         // If result_test null means room offline else room online
         if ($result_test == null) {
+            if ($this->resultDetailRepository->existsDuplicateStudentName($request->get("name"), null, $current_room->id)) {
+                return self::responseJSON(422, false, 'Please choose other name');
+            }
             $result_detail = $this->resultDetailRepository->create([
                 'student_name' => $request->get('name'),
                 'scores' => 0,
@@ -91,6 +95,9 @@ class ApiRoomController extends ApiBaseController
             ]);
             $mess = "Submit success, please waiting room online";
         } else {
+            if ($this->resultDetailRepository->existsDuplicateStudentName($request->get("name"), $result_test->id, null)) {
+                return self::responseJSON(422, false, 'Please choose other name');
+            }
             $result_detail = $this->resultTestRepository->creatResultDetailForStudent(
                 $result_test->quiz_copy_id, $result_test, $request->input("name"), $current_room->time_offline);
             $mess = "Submit success";

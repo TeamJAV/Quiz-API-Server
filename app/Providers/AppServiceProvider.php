@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use App\Container\SettingLaunch;
 use App\Models\ResultTest;
+use App\Repositories\QuestionCopy\QuestionCopyRepository;
 use App\Repositories\Quiz\IQuizRepositoryInterface;
 use App\Repositories\Quiz\QuizRepository;
 use App\Repositories\QuizCopy\IQuizCopyRepositoryInterface;
@@ -50,6 +51,10 @@ class AppServiceProvider extends ServiceProvider
             IQuizCopyRepositoryInterface::class,
             QuizCopyRepository::class
         );
+        $this->app->bind("resultDetailRepo", function () {
+            $question_copy_repo = new QuestionCopyRepository();
+            return new ResultDetailRepository($question_copy_repo);
+        });
     }
 
     /**
