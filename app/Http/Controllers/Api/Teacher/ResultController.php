@@ -39,9 +39,11 @@ class ResultController extends ApiBaseController
             return self::response403();
         }
         $quiz_copy = $this->quizCopyRepository->find($result_test->quiz_copy_id);
+        $result_live = $result_test->resultDetails()->get();
         return self::responseJSON(200, true, 'Success', [
             'quiz' => new QuizCopyCollectionLive($quiz_copy),
-            'result_live' => $this->resultDetailRepository->formatResultDetail($result_test->resultDetails()->get())
+            'result_live' => $this->resultDetailRepository->formatResultDetail($result_live),
+            'percent' => $this->resultDetailRepository->getPercent($result_live)
         ]);
     }
 
