@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(
             IRoomRepositoryInterface::class,
-            RoomRepository::class,
+            RoomRepository::class
         );
         $this->app->singleton(
             IResultTestRepositoryInterface::class,

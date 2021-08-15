@@ -48,24 +48,9 @@ class SubmitQuestionEvent implements ShouldBroadcast
     {
         $resultDetail = $this->resultTest->resultDetails()->get();
         $repo = app("resultDetailRepo");
-        return $repo->formatResultDetail($resultDetail);
-//        $resultDetail->transform(function ($record) {
-//            $record->student_choices = json_decode($record->student_choices, true);
-//            $record->student_choices = array_map(function ($r) {
-//                $id = array_key_first($r);
-//                $r["question_id"] = $id;
-////                $r["content"] = QuestionCopy::find($id)->title;
-//                $r["student_choice"] = $r[$id];
-//                unset($r[$id]);
-//                return $r;
-//            }, $record->student_choices);
-////            unset($record["result_id"]);
-//            unset($record["deleted_at"]);
-//            unset($record["created_at"]);
-//            unset($record["updated_at"]);
-//            unset($record["room_pending_id"]);
-//            return $record;
-//        });
-//        return $resultDetail->toArray();
+        return [
+            'result_live' => $repo->formatResultDetail($resultDetail),
+            'percent' => $repo->getPercent($resultDetail)
+        ];
     }
 }

@@ -46,11 +46,13 @@ class ApiResultLiveController extends ApiBaseController
         }
         $quiz = $this->quizCopyRepository->find($result_test->quiz_copy_id);
         $result_live = $result_test->resultDetails()->get();
+        $this->resultDetailRepository->formatResultDetail($result_live);
         return self::responseJSON(200, true, "Dataset", [
             'key_channel' => $result_test->id,
             'room' => new RoomCollection($room),
             'quiz' => new QuizCopyCollectionLive($quiz),
-            'result_live' => $this->resultDetailRepository->formatResultDetail($result_live)
+            'result_live' => $result_live,
+            'percent' => $this->resultDetailRepository->getPercent($result_live)
         ]);
     }
 }

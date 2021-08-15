@@ -135,4 +135,29 @@ class ResultDetailRepository extends BaseRepository implements IResultDetailRepo
             return $record;
         })->toArray();
     }
+
+    public function getPercent($result_details): array
+    {
+        // just format result_details before
+        $number_student = count($result_details);
+        $percent = [];
+        foreach ($result_details as $single) {
+            $student_choices = $single['student_choices'];
+            foreach ($student_choices as $student_choice) {
+                $qs_id = $student_choice["question_id"];
+                if (!key_exists($qs_id, $percent)) {
+                    $percent[$qs_id] = [
+                        'choose' => 0,
+                        'percent' => '0%'
+                    ];
+                }
+                if ($student_choice["student_choice"]["correct"]) {
+                    ++$percent[$qs_id]['choose'];
+                    $percent[$qs_id]['percent'] = round(
+                            $percent[$qs_id]['choose'] * 100 / $number_student, 1) . '%';
+                }
+            }
+        }
+        return $percent;
+    }
 }

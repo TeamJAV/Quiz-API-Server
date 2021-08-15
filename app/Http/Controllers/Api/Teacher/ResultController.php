@@ -79,7 +79,7 @@ class ResultController extends ApiBaseController
             }
         });
         foreach ($unit as $key => &$value) {
-            $value["percent"] = number_format($value["choose"] * 100 / $number_student, 1) . '%';
+            $value["percent"] = round($value["choose"] * 100 / $number_student, 1) . '%';
         }
         return self::responseJSON(200, true, 'Success',
             [
