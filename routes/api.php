@@ -26,7 +26,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['cors', 'json.response', '
     Route::group(['prefix' => 'result', 'middleware' => ['auth:api', 'verified']], function () {
         Route::get('all_result', 'ResultController@allHistoryTest')->name('api.all-result');
         Route::get('detail_result/{result_test}', 'ResultController@detailHistory')->name('api.detail-result');
-        Route::get('detail_result/{result_id}/question/{question_copy_id?}', 'ResultController@getQuestionResultDetail')->name('api.question-result');
+        Route::get('detail_result/{result}/question/{question}', 'ResultController@getQuestionResultDetail')->name('api.question-result');
     });
 
     // API quiz

@@ -11,6 +11,7 @@ use App\Models\ResultDetail;
 use App\Models\ResultTest;
 use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -44,49 +45,48 @@ class ResultController extends ApiBaseController
         ]);
     }
 
-    public function getQuestionResultDetail($result_id, $question_copy_id): JsonResponse
+    public function getQuestionResultDetail(ResultTest $result, QuestionCopy $question): JsonResponse
     {
-        $result = ResultTest::find($result_id);
-        $ans_list = [];
-        if (!$result) {
-            return self::response404();
+        try {
+            $this->authorize("view", $result);
+        } catch (AuthorizationException $e) {
+            return self::response403($e->getMessage());
         }
-        if (!auth()->user()->can("view", $result)) {
-            return self::response403('Not found history');
-        }
-        $quiz = $result->quiz_copy_id;
-        // lấy câu hỏi với id đầu vào
-        $question = QuestionCopy::query()->where('quiz_copy_id', $quiz)->find($question_copy_id);
-        // lấy các bài thi của thí sinh với id của result
         $detail = ResultDetail::query()->where('result_id', $result->id)->get();
-        $num_student = count((array)json_decode($detail));
-        for ($i = 0; $i < $num_student; $i++) {
-            $a = json_decode($detail[$i]['student_choices'], true);
-            foreach ($a as $key => $val) {
-                if ($key == $question->id) {
-                    foreach ($val['choices'] as $choice => $data) {
-                        array_push($ans_list, $data);
+        $options = array_keys(json_decode($question->choices, true));
+        $unit = [];
+        foreach ($options as $option) {
+            $unit[$option] = [
+                'choose' => 0,
+                'percent' => '',
+            ];
+        }
+        $number_student = $detail->count();
+        $student_answer = 0;
+        $detail->each(function ($student) use ($question, &$student_answer, &$unit) {
+            $choices = json_decode($student["student_choices"], true);
+            foreach ($choices as $choice) {
+                $id_question = array_key_first($choice);
+                if ($id_question == $question->id) {
+                    $student_choices = $choice[$id_question]['choices'];
+                    $student_answer += empty($student_choices) ? 0 : 1;
+                    foreach ($student_choices as $student_choice) {
+                        if (isset($unit[$student_choice])) {
+                            $unit[$student_choice]["choose"] += 1;
+                        }
                     }
                 }
             }
-        }
-        sort($ans_list);
-        $percent = array();
-        for ($i = 0; $i < $num_student; $i++) {
-            if (array_key_exists($ans_list[$i], $percent)) {
-                $percent[$ans_list[$i]] += 1;
-            } else {
-                $percent[$ans_list[$i]] = 1;
-            }
-        }
-
-        foreach ($percent as $key => $value) {
-            $percent[$key] = $value / ($num_student) * 100;
+        });
+        foreach ($unit as $key => &$value) {
+            $value["percent"] = number_format($value["choose"] * 100 / $number_student, 1) . '%';
         }
         return self::responseJSON(200, true, 'Success',
             [
                 'question' => new QuestionCopyCollection($question),
-                'percent' => $percent
+                'student_answer' => $student_answer,
+                'total_student' => $number_student,
+                'percent' => $unit,
             ]);
     }
 }
