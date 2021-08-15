@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api\Teacher;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\HistoryTest\ResultTestCollection;
 use App\Http\Resources\QuestionCopyCollection;
-use App\Http\Resources\ResultCollection;
+use App\Http\Resources\QuizCopyCollectionLive;
 use App\Models\QuestionCopy;
 use App\Models\ResultDetail;
 use App\Models\ResultTest;
+use App\Repositories\QuizCopy\QuizCopyRepository;
 use App\Repositories\ResultDetail\ResultDetailRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,10 +17,13 @@ use Illuminate\Http\Request;
 class ResultController extends ApiBaseController
 {
     private $resultDetailRepository;
+    private $quizCopyRepository;
 
-    public function __construct(ResultDetailRepository $resultDetailRepository)
+    public function __construct(ResultDetailRepository $resultDetailRepository,
+                                QuizCopyRepository $quizCopyRepository)
     {
         $this->resultDetailRepository = $resultDetailRepository;
+        $this->quizCopyRepository = $quizCopyRepository;
     }
 
     public function allHistoryTest(Request $request): JsonResponse
@@ -28,16 +32,16 @@ class ResultController extends ApiBaseController
         return self::responseJSON(200, true, 'Thành công', ResultTestCollection::collection($result));
     }
 
-    public function detailHistory(Request $request, $id): JsonResponse
+    public function detailHistory(Request $request, ResultTest $result_test): JsonResponse
     {
-        $result = ResultTest::find($id);
-        if (!$result) {
-            return self::response404();
+        if (auth()->user()->cant("view", $result_test)) {
+            return self::response403();
         }
-        if (!auth()->user()->can("view", $result)) {
-            return self::response403('Not found history');
-        }
-        return self::responseJSON(200, true, '', new ResultCollection($result));
+        $quiz_copy = $this->quizCopyRepository->find($result_test->quiz_copy_id);
+        return self::responseJSON(200, true, 'Success', [
+            'quiz' => new QuizCopyCollectionLive($quiz_copy),
+            'result_live' => $this->resultDetailRepository->formatResultDetail($result_test->resultDetails()->get())
+        ]);
     }
 
     public function getQuestionResultDetail($result_id, $question_copy_id): JsonResponse
