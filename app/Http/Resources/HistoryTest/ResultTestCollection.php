@@ -22,8 +22,8 @@ class ResultTestCollection extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status,
-            'start_at' => $this->date_create,
-            'stop_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
+            'start_at' => Carbon::parse($this->date_create)->toDayDateTimeString(),
+            'stop_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
             'room' => new RoomCollection($this->room),
             'quiz' => new QuizCopyCollectionLive($this->quizCopy),
             'result' => ResultDetailCollectionLive::collection($this->resultDetails)
