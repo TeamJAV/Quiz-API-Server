@@ -22,6 +22,7 @@ class CreateResultDetailsTable extends Migration
             $table->timestamp('time_end')->nullable();
             $table->integer('room_pending_id')->nullable();
             $table->longText('timestamp_out')->nullable();
+            $table->tinyInteger('is_finished')->default(0);
             $table->unsignedBigInteger('result_id');
             $table->foreign('result_id')->references('id')->on('result_tests');
             $table->softDeletes();
